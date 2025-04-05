@@ -1,0 +1,35 @@
+### Test the root endpoint (GET /)
+# This request should return the HTML web application
+GET http://localhost:8000/
+Accept: text/html
+
+### Test the text-to-speech endpoint (POST /text-to-speech)
+# This request converts text to speech and returns an audio stream
+POST http://localhost:8000/text-to-speech
+Content-Type: application/json
+
+{
+  "text": "안녕하세요, 이것은 텍스트를 음성으로 변환하는 API 테스트입니다."
+}
+
+### Test the text-to-speech endpoint with English text
+POST http://localhost:8000/text-to-speech
+Content-Type: application/json
+
+{
+  "text": "Hello, this is a test of the text-to-speech API."
+}
+
+### Test the text-to-speech endpoint with invalid request (missing text field)
+# This should return a validation error
+POST http://localhost:8000/text-to-speech
+Content-Type: application/json
+
+{
+  "invalid_field": "This request is missing the required 'text' field"
+}
+
+### Test accessing static files
+# This request should return a CSS file from the static directory
+GET http://localhost:8000/static/css/style.css
+Accept: text/css
