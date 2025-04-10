@@ -5,3 +5,4 @@ fastapi
 uvicorn
 requests
 jinja2
+openai
