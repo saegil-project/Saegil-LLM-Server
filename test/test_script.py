@@ -2,7 +2,7 @@ import os
 import time
 import tempfile
 import pygame
-from text_to_speech_stream import text_to_speech_stream
+from app.services.text_to_speech_stream import text_to_speech_stream
 
 def play_audio_stream(audio_stream):
     """

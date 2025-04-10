@@ -32,5 +32,5 @@ def test_text_to_speech_api():
 
 if __name__ == "__main__":
     print("Testing the text-to-speech API...")
-    print("Make sure the API is running (python api.py) before running this test.")
+    print("Make sure the API is running (python main.py) before running this test.")
     test_text_to_speech_api()

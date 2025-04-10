@@ -2,8 +2,9 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from text_to_speech_stream import text_to_speech_stream
+from app.services.text_to_speech_stream import text_to_speech_stream
 import uvicorn
+import os
 from pydantic import BaseModel
 
 # Define request model
@@ -17,11 +18,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Mount static files directory
-app.mount("/static", StaticFiles(directory="static"), name="static")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Set up templates
-templates = Jinja2Templates(directory="templates")
+# static 및 templates 디렉토리는 app/ 내부에 있으므로 절대경로로 지정
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 @app.post("/text-to-speech")
 async def convert_text_to_speech(query: TextQuery):
@@ -52,4 +53,4 @@ async def root(request: Request):
 
 # Run the app if this file is executed directly
 if __name__ == "__main__":
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
