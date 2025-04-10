@@ -33,7 +33,7 @@ ELEVENLABS_API_KEY=your-api-key-here
 Start the server:
 
 ```bash
-python api.py
+python app.py
 ```
 
 The web application will be available at http://localhost:8000.
