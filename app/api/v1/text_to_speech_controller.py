@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 
 from app.dependencies import get_text_to_speech_service
 from app.models.text_to_speech import TextQuery
-from app.services.text_to_speech import TextToSpeechService
+from app.services.text_to_speech_service import TextToSpeechService
 
 router = APIRouter(prefix="/text-to-speech", tags=["text-to-speech"])
 

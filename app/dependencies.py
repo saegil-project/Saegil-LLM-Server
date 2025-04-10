@@ -2,7 +2,7 @@
 Dependency injection functions for the application.
 """
 
-from app.services.text_to_speech import TextToSpeechService, text_to_speech_service
+from app.services.text_to_speech_service import TextToSpeechService, text_to_speech_service
 
 
 def get_text_to_speech_service() -> TextToSpeechService:
