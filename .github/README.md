@@ -70,6 +70,8 @@ Saegil-LLM-Server/
    source venv/bin/activate  # Windows: venv\Scripts\activate
    ```
 
+   > **주의**: 이 프로젝트는 Python 3.11 버전에서 개발 및 테스트되었습니다. 안정적인 실행을 위해 Python 3.11 버전을 사용하는 것을 권장합니다.
+
 3. 의존성 설치:
    ```bash
    pip install -r requirements.txt
@@ -91,7 +93,7 @@ Saegil-LLM-Server/
    uvicorn app.main:app --reload
    ```
 
-6. 브라우저에서 `http://localhost:8000` 접속
+6. 브라우저에서 `http://localhost:9090` 접속
 
 ### Docker를 이용한 배포
 
@@ -102,16 +104,16 @@ Saegil-LLM-Server/
 
 2. Docker 컨테이너 실행:
    ```bash
-   docker run -p 8000:8000 -e ELEVENLABS_API_KEY=your_elevenlabs_api_key -e OPENAI_API_KEY=your_openai_api_key saegil-llm-server
+   docker run -p 9090:9090 -e ELEVENLABS_API_KEY=your_elevenlabs_api_key -e OPENAI_API_KEY=your_openai_api_key saegil-llm-server
    ```
 
-3. 브라우저에서 `http://localhost:8000` 접속
+3. 브라우저에서 `http://localhost:9090` 접속
 
 ## 사용 방법
 
 ### 웹 인터페이스
 
-1. 브라우저에서 `http://localhost:8000` 접속
+1. 브라우저에서 `http://localhost:9090` 접속
 2. 텍스트 입력 필드에 변환하고 싶은 텍스트 입력
 3. "Convert to Speech" 버튼 클릭
 4. 생성된 음성을 재생하거나 다운로드
@@ -132,7 +134,7 @@ Saegil-LLM-Server/
 보내고, 응답으로 MP3 오디오 파일을 받을 수 있습니다.
 
 ```bash
-curl -X POST "http://localhost:8000/text-to-speech/" \
+curl -X POST "http://localhost:9090/text-to-speech/" \
      -H "Content-Type: application/json" \
      -d '{"text":"안녕하세요, 반갑습니다."}'
 ```
@@ -153,7 +155,7 @@ curl -X POST "http://localhost:8000/text-to-speech/" \
 이 API는 오디오 파일의 URL을 받아 해당 파일을 다운로드하고 텍스트로 변환합니다.
 
 ```bash
-curl -X POST "http://localhost:8000/speech-to-text/" \
+curl -X POST "http://localhost:9090/speech-to-text/" \
      -H "Content-Type: application/json" \
      -d '{"audio_url":"https://example.com/audio/sample.mp3"}'
 ```
@@ -168,7 +170,7 @@ curl -X POST "http://localhost:8000/speech-to-text/" \
 이 API는 MP3 파일을 직접 업로드하여 텍스트로 변환할 수 있습니다.
 
 ```bash
-curl -X POST "http://localhost:8000/speech-to-text/upload" \
+curl -X POST "http://localhost:9090/speech-to-text/upload" \
      -H "Content-Type: multipart/form-data" \
      -F "file=@/path/to/your/audio.mp3"
 ```
@@ -196,7 +198,7 @@ ChatGPT를 통해 텍스트 응답을 받는 API 엔드포인트는 여러 방�
 이 API는 텍스트 쿼리를 받아 ChatGPT 응답을 반환합니다.
 
 ```bash
-curl -X POST "http://localhost:8000/chatgpt/" \
+curl -X POST "http://localhost:9090/chatgpt/" \
      -H "Content-Type: application/json" \
      -d '{"text":"안녕하세요, 오늘 날씨가 어떤가요?"}'
 ```
@@ -211,7 +213,7 @@ curl -X POST "http://localhost:8000/chatgpt/" \
 이 API는 STT로 변환된 텍스트를 받아 ChatGPT 응답을 반환합니다.
 
 ```bash
-curl -X POST "http://localhost:8000/chatgpt/stt" \
+curl -X POST "http://localhost:9090/chatgpt/stt" \
      -H "Content-Type: application/json" \
      -d '{"audio_text":"오늘 날씨가 어떤가요?"}'
 ```
@@ -226,7 +228,7 @@ curl -X POST "http://localhost:8000/chatgpt/stt" \
 이 API는 오디오 URL을 받아 음성을 텍스트로 변환한 후 ChatGPT 응답을 반환합니다.
 
 ```bash
-curl -X POST "http://localhost:8000/chatgpt/audio" \
+curl -X POST "http://localhost:9090/chatgpt/audio" \
      -H "Content-Type: application/json" \
      -d '{"audio_url":"https://example.com/audio/sample.mp3"}'
 ```
@@ -241,7 +243,7 @@ curl -X POST "http://localhost:8000/chatgpt/audio" \
 이 API는 MP3 파일을 직접 업로드하여 텍스트로 변환한 후 ChatGPT 응답을 반환합니다.
 
 ```bash
-curl -X POST "http://localhost:8000/chatgpt/upload" \
+curl -X POST "http://localhost:9090/chatgpt/upload" \
      -H "Content-Type: multipart/form-data" \
      -F "file=@/path/to/your/audio.mp3"
 ```
@@ -260,9 +262,9 @@ curl -X POST "http://localhost:8000/chatgpt/upload" \
 
 FastAPI의 자동 생성 문서는 다음 URL에서 확인할 수 있습니다:
 
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
-- OpenAPI JSON 스키마: `http://localhost:8000/openapi.json`
+- Swagger UI: `http://localhost:9090/docs`
+- ReDoc: `http://localhost:9090/redoc`
+- OpenAPI JSON 스키마: `http://localhost:9090/openapi.json`
 
 ### Swagger UI 기능
 

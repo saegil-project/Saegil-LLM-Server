@@ -1,11 +1,11 @@
 ### Test the root endpoint (GET /)
 # This request should return the HTML web application
-GET http://localhost:8000/
+GET http://localhost:9090/
 Accept: text/html
 
 ### Test the text-to-speech endpoint (POST /text-to-speech)
 # This request converts text to speech and returns an audio stream
-POST http://localhost:8000/text-to-speech
+POST http://localhost:9090/text-to-speech
 Content-Type: application/json
 
 {
@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### Test the text-to-speech endpoint with English text
-POST http://localhost:8000/text-to-speech
+POST http://localhost:9090/text-to-speech
 Content-Type: application/json
 
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ### Test the text-to-speech endpoint with invalid request (missing text field)
 # This should return a validation error
-POST http://localhost:8000/text-to-speech
+POST http://localhost:9090/text-to-speech
 Content-Type: application/json
 
 {
@@ -31,5 +31,5 @@ Content-Type: application/json
 
 ### Test accessing static files
 # This request should return a CSS file from the static directory
-GET http://localhost:8000/static/css/style.css
+GET http://localhost:9090/static/css/style.css
 Accept: text/css
