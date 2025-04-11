@@ -1,5 +1,5 @@
 """
-API routes for text-to-speech functionality.
+텍스트-음성 변환 기능을 위한 API 라우트.
 """
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -11,29 +11,29 @@ from app.services.text_to_speech_service import TextToSpeechService
 router = APIRouter(prefix="/text-to-speech", tags=["text-to-speech"])
 
 
-@router.post("/", summary="Convert text to speech")
+@router.post("/", summary="텍스트를 음성으로 변환")
 async def convert_text_to_speech(
         query: TextQuery,
         tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
 ):
     """
-    Convert text to speech and return audio stream.
-    
+    텍스트를 음성으로 변환하고 오디오 스트림을 반환합니다.
+
     Args:
-        query: The text query to convert to speech
-        tts_service: The text-to-speech service (injected)
-        
+        query: 음성으로 변환할 텍스트 쿼리
+        tts_service: 텍스트-음성 변환 서비스 (주입됨)
+
     Returns:
-        A streaming response with the audio data
-        
+        오디오 데이터가 포함된 스트리밍 응답
+
     Raises:
-        HTTPException: If there's an error converting text to speech
+        HTTPException: 텍스트를 음성으로 변환하는 중 오류가 발생한 경우
     """
     try:
-        # Convert text to speech using the service
+        # 서비스를 사용하여 텍스트를 음성으로 변환
         audio_stream = tts_service.text_to_speech_stream(query.text)
 
-        # Return the audio as a streaming response
+        # 오디오를 스트리밍 응답으로 반환
         return StreamingResponse(
             audio_stream,
             media_type="audio/mpeg",
@@ -44,5 +44,5 @@ async def convert_text_to_speech(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Error converting text to speech: {str(e)}"
+            detail=f"텍스트를 음성으로 변환하는 중 오류 발생: {str(e)}"
         )

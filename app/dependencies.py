@@ -1,5 +1,5 @@
 """
-Dependency injection functions for the application.
+애플리케이션을 위한 의존성 주입 함수.
 """
 
 from app.services.text_to_speech_service import TextToSpeechService, text_to_speech_service
@@ -7,9 +7,9 @@ from app.services.text_to_speech_service import TextToSpeechService, text_to_spe
 
 def get_text_to_speech_service() -> TextToSpeechService:
     """
-    Dependency for getting the text-to-speech service.
-    
+    텍스트-음성 변환 서비스를 가져오기 위한 의존성.
+
     Returns:
-        An instance of the TextToSpeechService
+        TextToSpeechService의 인스턴스
     """
     return text_to_speech_service

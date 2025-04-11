@@ -12,8 +12,8 @@ class Settings(BaseModel):
     """
     # API settings
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "Text-to-Speech API"
-    PROJECT_DESCRIPTION: str = "API that converts text queries to speech using ElevenLabs"
+    PROJECT_NAME: str = "텍스트-음성 변환 API"
+    PROJECT_DESCRIPTION: str = "ElevenLabs를 사용하여 텍스트 쿼리를 음성으로 변환하는 API"
     VERSION: str = "1.0.0"
 
     # ElevenLabs settings

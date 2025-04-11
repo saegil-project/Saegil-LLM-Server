@@ -3,7 +3,7 @@ API router that includes all API v1 endpoints.
 """
 from fastapi import APIRouter
 
-from app.api.v1 import frontend
+from app.api.v1 import frontend, text_to_speech_controller as text_to_speech
 
 api_router = APIRouter()
 

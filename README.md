@@ -131,17 +131,33 @@ FastAPI의 자동 생성 문서는 다음 URL에서 확인할 수 있습니다:
 
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
+- OpenAPI JSON 스키마: `http://localhost:8000/openapi.json`
+
+### Swagger UI 기능
+
+Swagger UI는 클라이언트 개발자를 위한 강력한 도구로, 다음과 같은 기능을 제공합니다:
+
+- **대화형 API 테스트**: 브라우저에서 직접 API 요청을 테스트할 수 있습니다.
+- **요청/응답 예시**: 각 엔드포인트의 요청 및 응답 형식을 확인할 수 있습니다.
+- **모델 스키마**: 요청 및 응답 데이터 모델의 상세 스키마를 확인할 수 있습니다.
+- **인증 정보**: API 인증 방식에 대한 정보를 제공합니다.
+- **요청 시간 표시**: API 요청 처리 시간을 확인할 수 있습니다.
 
 ### 주요 엔드포인트
 
 - `GET /`: 웹 애플리케이션 메인 페이지
 - `POST /text-to-speech/`: 텍스트를 음성으로 변환
 
+### API 태그
+
+API 엔드포인트는 다음과 같은 태그로 구분됩니다:
+
+- **text-to-speech**: 텍스트를 음성으로 변환하는 엔드포인트
+- **frontend**: 웹 애플리케이션 프론트엔드 관련 엔드포인트
+
 ## 주의사항
 
 - ElevenLabs API는 사용량에 따라 요금이 부과될 수 있습니다.
-- Dockerfile의 CMD 명령어가 "uvicorn api:app --host 0.0.0.0 --port 8000"으로 설정되어 있는데, 이는 "uvicorn app.main:app --host 0.0.0.0
-  --port 8000"으로 수정해야 합니다.
 
 ## 라이선스
 
