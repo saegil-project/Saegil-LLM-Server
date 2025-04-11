@@ -6,3 +6,6 @@
 
 ### Pyenv ###
 .python-version
+
+### Pycache ###
+__pycache__
