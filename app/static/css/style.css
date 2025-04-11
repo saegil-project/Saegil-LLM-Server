@@ -24,7 +24,7 @@ body {
 
 h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: #2c3e50;
 }
 
@@ -33,6 +33,86 @@ p {
     text-align: center;
 }
 
+/* Tabs */
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    margin: 0 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: #666;
+    transition: all 0.3s;
+}
+
+.tab-btn:hover {
+    background-color: #e9ecef;
+}
+
+.tab-btn.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* STT Options */
+.stt-options {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.option-btn {
+    padding: 8px 16px;
+    margin: 0 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.3s;
+}
+
+.option-btn:hover {
+    background-color: #e9ecef;
+}
+
+.option-btn.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.stt-option {
+    display: none;
+    margin-top: 20px;
+}
+
+.stt-option.active {
+    display: block;
+}
+
+/* Form Elements */
 .form-group {
     margin-bottom: 20px;
 }
@@ -43,14 +123,25 @@ label {
     font-weight: bold;
 }
 
-textarea {
+textarea, input[type="url"] {
     width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    resize: vertical;
     font-family: inherit;
     font-size: 16px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f9fa;
 }
 
 button {
@@ -68,19 +159,20 @@ button:hover {
     background-color: #2980b9;
 }
 
-#convert-btn {
+#convert-btn, #upload-convert-btn, #url-convert-btn {
     display: block;
     width: 100%;
     margin-bottom: 20px;
 }
 
-#result {
+/* Results */
+.result {
     margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid #eee;
 }
 
-#result h2 {
+.result h2 {
     margin-bottom: 15px;
     text-align: center;
 }
@@ -88,6 +180,17 @@ button:hover {
 audio {
     width: 100%;
     margin-bottom: 15px;
+}
+
+.text-result {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .controls {
@@ -103,18 +206,27 @@ audio {
     background-color: #219653;
 }
 
-#loading, #error {
+#copy-btn {
+    background-color: #9b59b6;
+}
+
+#copy-btn:hover {
+    background-color: #8e44ad;
+}
+
+/* Loading and Error States */
+.loading, .error {
     margin-top: 20px;
     text-align: center;
     padding: 15px;
     border-radius: 4px;
 }
 
-#loading {
+.loading {
     background-color: #f8f9fa;
 }
 
-#error {
+.error {
     background-color: #ffebee;
     color: #c62828;
 }

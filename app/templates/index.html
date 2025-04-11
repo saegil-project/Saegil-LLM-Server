@@ -3,37 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text-to-Speech Web App</title>
+    <title>Speech Conversion Web App</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Text-to-Speech Converter</h1>
-        <p>Enter text below to convert it to speech using ElevenLabs API</p>
+        <h1>Speech Conversion Tools</h1>
 
-        <form id="tts-form">
-            <div class="form-group">
-                <label for="text-input">Text to convert:</label>
-                <textarea id="text-input" name="text" rows="5" placeholder="Enter your text here..." required></textarea>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tts">Text-to-Speech</button>
+            <button class="tab-btn" data-tab="stt">Speech-to-Text</button>
+            <button class="tab-btn" data-tab="stt-chatgpt">STT to ChatGPT</button>
+        </div>
+
+        <div class="tab-content active" id="tts-tab">
+            <p>Enter text below to convert it to speech using ElevenLabs API</p>
+
+            <form id="tts-form">
+                <div class="form-group">
+                    <label for="text-input">Text to convert:</label>
+                    <textarea id="text-input" name="text" placeholder="Enter your text here..." required
+                              rows="5"></textarea>
+                </div>
+
+                <button id="convert-btn" type="submit">Convert to Speech</button>
+            </form>
+
+            <div class="result hidden" id="tts-result">
+                <h2>Generated Speech</h2>
+                <audio controls id="audio-player"></audio>
+                <div class="controls">
+                    <button class="hidden" id="download-btn">Download MP3</button>
+                </div>
             </div>
 
-            <button type="submit" id="convert-btn">Convert to Speech</button>
-        </form>
+            <div class="loading hidden" id="tts-loading">
+                <p>Converting text to speech...</p>
+            </div>
 
-        <div id="result" class="hidden">
-            <h2>Generated Speech</h2>
-            <audio id="audio-player" controls></audio>
-            <div class="controls">
-                <button id="download-btn" class="hidden">Download MP3</button>
+            <div class="error hidden" id="tts-error">
+                <p>An error occurred. Please try again.</p>
             </div>
         </div>
 
-        <div id="loading" class="hidden">
-            <p>Converting text to speech...</p>
+        <div class="tab-content" id="stt-tab">
+            <p>Convert speech to text using OpenAI Whisper API</p>
+
+            <div class="stt-options">
+                <button class="option-btn active" data-option="upload">Upload MP3 File</button>
+                <button class="option-btn" data-option="url">Provide Audio URL</button>
+            </div>
+
+            <div class="stt-option active" id="upload-option">
+                <form id="stt-upload-form">
+                    <div class="form-group">
+                        <label for="audio-file">Select MP3 file:</label>
+                        <input accept="audio/mpeg, audio/mp3" id="audio-file" name="file" required type="file">
+                    </div>
+                    <button id="upload-convert-btn" type="submit">Convert to Text</button>
+                </form>
+            </div>
+
+            <div class="stt-option" id="url-option">
+                <form id="stt-url-form">
+                    <div class="form-group">
+                        <label for="audio-url">Audio URL:</label>
+                        <input id="audio-url" name="audio_url" placeholder="https://example.com/audio.mp3" required
+                               type="url">
+                    </div>
+                    <button id="url-convert-btn" type="submit">Convert to Text</button>
+                </form>
+            </div>
+
+            <div class="result hidden" id="stt-result">
+                <h2>Transcribed Text</h2>
+                <div class="text-result">
+                    <p id="transcription-text"></p>
+                </div>
+                <div class="controls">
+                    <button id="copy-btn">Copy Text</button>
+                </div>
+            </div>
+
+            <div class="loading hidden" id="stt-loading">
+                <p>Converting speech to text...</p>
+            </div>
+
+            <div class="error hidden" id="stt-error">
+                <p>An error occurred. Please try again.</p>
+            </div>
         </div>
 
-        <div id="error" class="hidden">
-            <p>An error occurred. Please try again.</p>
+        <div class="tab-content" id="stt-chatgpt-tab">
+            <p>Convert speech to text and get a response from ChatGPT</p>
+
+            <div class="stt-options">
+                <button class="option-btn active" data-option="chatgpt-upload">Upload MP3 File</button>
+                <button class="option-btn" data-option="chatgpt-url">Provide Audio URL</button>
+            </div>
+
+            <div class="stt-option active" id="chatgpt-upload-option">
+                <form id="stt-chatgpt-upload-form">
+                    <div class="form-group">
+                        <label for="chatgpt-audio-file">Select MP3 file:</label>
+                        <input accept="audio/mpeg, audio/mp3" id="chatgpt-audio-file" name="file" required type="file">
+                    </div>
+                    <button id="chatgpt-upload-convert-btn" type="submit">Convert and Ask ChatGPT</button>
+                </form>
+            </div>
+
+            <div class="stt-option" id="chatgpt-url-option">
+                <form id="stt-chatgpt-url-form">
+                    <div class="form-group">
+                        <label for="chatgpt-audio-url">Audio URL:</label>
+                        <input id="chatgpt-audio-url" name="audio_url" placeholder="https://example.com/audio.mp3"
+                               required
+                               type="url">
+                    </div>
+                    <button id="chatgpt-url-convert-btn" type="submit">Convert and Ask ChatGPT</button>
+                </form>
+            </div>
+
+            <div class="result hidden" id="stt-chatgpt-result">
+                <h2>Transcribed Text</h2>
+                <div class="text-result">
+                    <p id="chatgpt-transcription-text"></p>
+                </div>
+
+                <h2>ChatGPT Response</h2>
+                <div class="text-result">
+                    <p id="chatgpt-response-text"></p>
+                </div>
+
+                <div class="controls">
+                    <button id="chatgpt-copy-btn">Copy Response</button>
+                </div>
+            </div>
+
+            <div class="loading hidden" id="stt-chatgpt-loading">
+                <p>Converting speech and getting ChatGPT response...</p>
+            </div>
+
+            <div class="error hidden" id="stt-chatgpt-error">
+                <p>An error occurred. Please try again.</p>
+            </div>
         </div>
     </div>
 
