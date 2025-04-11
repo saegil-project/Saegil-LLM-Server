@@ -12,6 +12,10 @@ tags_metadata = [
         "description": "ElevenLabs API를 사용한 텍스트-음성 변환 관련 작업.",
     },
     {
+        "name": "speech-to-text",
+        "description": "OpenAI API를 사용한 음성-텍스트 변환 관련 작업.",
+    },
+    {
         "name": "frontend",
         "description": "웹 애플리케이션 프론트엔드 제공 관련 작업.",
     },
@@ -26,15 +30,20 @@ app = FastAPI(
     ## API 기능
 
     * **텍스트-음성 변환**: ElevenLabs API를 사용하여 텍스트를 고품질 음성으로 변환
+    * **음성-텍스트 변환**: OpenAI Whisper API를 사용하여 오디오를 텍스트로 변환
     * **스트리밍 오디오**: 효율적인 전송을 위한 스트리밍 응답으로 오디오 제공
 
     ## 인증
 
-    이 API는 ElevenLabs API 키 인증을 사용합니다. 환경 변수에 API 키를 설정하세요.
+    이 API는 다음 API 키를 사용합니다:
+    * **ElevenLabs API 키**: 텍스트-음성 변환 기능을 위해 필요
+    * **OpenAI API 키**: 음성-텍스트 변환 기능을 위해 필요
+
+    환경 변수에 API 키를 설정하세요.
 
     ## 사용량 제한
 
-    이 API를 사용할 때 ElevenLabs의 사용량 제한 정책을 숙지하세요.
+    이 API를 사용할 때 ElevenLabs 및 OpenAI의 사용량 제한 정책을 숙지하세요.
     """,
     version=settings.VERSION,
     docs_url="/docs",
