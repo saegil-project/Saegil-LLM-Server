@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech Web App</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Text-to-Speech Converter</h1>
+        <p>Enter text below to convert it to speech using ElevenLabs API</p>
+
+        <form id="tts-form">
+            <div class="form-group">
+                <label for="text-input">Text to convert:</label>
+                <textarea id="text-input" name="text" rows="5" placeholder="Enter your text here..." required></textarea>
+            </div>
+
+            <button type="submit" id="convert-btn">Convert to Speech</button>
+        </form>
+
+        <div id="result" class="hidden">
+            <h2>Generated Speech</h2>
+            <audio id="audio-player" controls></audio>
+            <div class="controls">
+                <button id="download-btn" class="hidden">Download MP3</button>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden">
+            <p>Converting text to speech...</p>
+        </div>
+
+        <div id="error" class="hidden">
+            <p>An error occurred. Please try again.</p>
+        </div>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>

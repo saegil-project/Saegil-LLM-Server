@@ -1,1 +1,8 @@
 elevenlabs
+python-dotenv
+pygame
+fastapi
+uvicorn
+requests
+jinja2
+openai

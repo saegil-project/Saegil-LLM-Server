@@ -3,3 +3,9 @@
 
 ### macOS ###
 .DS_Store
+
+### Pyenv ###
+.python-version
+
+### Pycache ###
+__pycache__
