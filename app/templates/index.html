@@ -13,6 +13,7 @@
         <div class="tabs">
             <button class="tab-btn active" data-tab="tts">Text-to-Speech</button>
             <button class="tab-btn" data-tab="stt">Speech-to-Text</button>
+            <button class="tab-btn" data-tab="stt-chatgpt">STT to ChatGPT</button>
         </div>
 
         <div class="tab-content active" id="tts-tab">
@@ -89,6 +90,61 @@
             </div>
 
             <div class="error hidden" id="stt-error">
+                <p>An error occurred. Please try again.</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="stt-chatgpt-tab">
+            <p>Convert speech to text and get a response from ChatGPT</p>
+
+            <div class="stt-options">
+                <button class="option-btn active" data-option="chatgpt-upload">Upload MP3 File</button>
+                <button class="option-btn" data-option="chatgpt-url">Provide Audio URL</button>
+            </div>
+
+            <div class="stt-option active" id="chatgpt-upload-option">
+                <form id="stt-chatgpt-upload-form">
+                    <div class="form-group">
+                        <label for="chatgpt-audio-file">Select MP3 file:</label>
+                        <input accept="audio/mpeg, audio/mp3" id="chatgpt-audio-file" name="file" required type="file">
+                    </div>
+                    <button id="chatgpt-upload-convert-btn" type="submit">Convert and Ask ChatGPT</button>
+                </form>
+            </div>
+
+            <div class="stt-option" id="chatgpt-url-option">
+                <form id="stt-chatgpt-url-form">
+                    <div class="form-group">
+                        <label for="chatgpt-audio-url">Audio URL:</label>
+                        <input id="chatgpt-audio-url" name="audio_url" placeholder="https://example.com/audio.mp3"
+                               required
+                               type="url">
+                    </div>
+                    <button id="chatgpt-url-convert-btn" type="submit">Convert and Ask ChatGPT</button>
+                </form>
+            </div>
+
+            <div class="result hidden" id="stt-chatgpt-result">
+                <h2>Transcribed Text</h2>
+                <div class="text-result">
+                    <p id="chatgpt-transcription-text"></p>
+                </div>
+
+                <h2>ChatGPT Response</h2>
+                <div class="text-result">
+                    <p id="chatgpt-response-text"></p>
+                </div>
+
+                <div class="controls">
+                    <button id="chatgpt-copy-btn">Copy Response</button>
+                </div>
+            </div>
+
+            <div class="loading hidden" id="stt-chatgpt-loading">
+                <p>Converting speech and getting ChatGPT response...</p>
+            </div>
+
+            <div class="error hidden" id="stt-chatgpt-error">
                 <p>An error occurred. Please try again.</p>
             </div>
         </div>
