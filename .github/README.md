@@ -70,6 +70,8 @@ Saegil-LLM-Server/
    source venv/bin/activate  # Windows: venv\Scripts\activate
    ```
 
+   > **주의**: 이 프로젝트는 Python 3.11 버전에서 개발 및 테스트되었습니다. 안정적인 실행을 위해 Python 3.11 버전을 사용하는 것을 권장합니다.
+
 3. 의존성 설치:
    ```bash
    pip install -r requirements.txt

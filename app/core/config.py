@@ -25,7 +25,7 @@ class Settings(BaseModel):
     # OpenAI settings
     OPENAI_API_KEY: str = Field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
     OPENAI_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_MODEL", "whisper-1"))
-    OPENAI_CHAT_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_CHAT_MODEL", "gpt-4o"))
+    OPENAI_CHAT_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini"))
 
     model_config = {
         "env_file": ".env",

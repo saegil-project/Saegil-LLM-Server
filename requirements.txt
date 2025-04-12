@@ -7,3 +7,4 @@ requests
 jinja2
 openai
 python-multipart
+pydantic
