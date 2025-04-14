@@ -24,11 +24,13 @@ class ChatGPTResponse(BaseModel):
     ChatGPT 응답을 위한 모델.
     """
     response: str = Field(..., description="ChatGPT의 응답 텍스트")
+    text: str = Field(None, description="STT로 변환된 원본 텍스트")
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "response": "안녕하세요! 오늘 날씨는 지역에 따라 다를 수 있습니다. 특정 지역을 알려주시면 더 정확한 정보를 제공해 드릴 수 있습니다."
+                "response": "안녕하세요! 오늘 날씨는 지역에 따라 다를 수 있습니다. 특정 지역을 알려주시면 더 정확한 정보를 제공해 드릴 수 있습니다.",
+                "text": "오늘 날씨가 어떤가요?"
             }
         }
     }

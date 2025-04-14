@@ -101,8 +101,8 @@ async def get_chatgpt_response_from_audio(
         # 서비스를 사용하여 ChatGPT 응답 가져오기
         response_text = chatgpt_service.get_response(text)
 
-        # 응답 반환
-        return ChatGPTResponse(response=response_text)
+        # 응답 반환 (텍스트 포함)
+        return ChatGPTResponse(response=response_text, text=text)
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -144,8 +144,8 @@ async def get_chatgpt_response_from_upload(
         # 서비스를 사용하여 ChatGPT 응답 가져오기
         response_text = chatgpt_service.get_response(text)
 
-        # 응답 반환
-        return ChatGPTResponse(response=response_text)
+        # 응답 반환 (텍스트 포함)
+        return ChatGPTResponse(response=response_text, text=text)
     except HTTPException:
         raise
     except Exception as e:

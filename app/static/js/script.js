@@ -3,6 +3,69 @@ document.addEventListener('DOMContentLoaded', function() {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
 
+    // Function to convert ChatGPT response to speech
+    async function convertChatGPTResponseToSpeech(text) {
+        if (!text) {
+            console.error('No ChatGPT response to convert to speech.');
+            return;
+        }
+
+        // Show loading, hide other sections
+        chatGPTTTSLoadingDiv.classList.remove('hidden');
+        chatGPTTTSResultDiv.classList.add('hidden');
+        chatGPTTTSErrorDiv.classList.add('hidden');
+
+        try {
+            // Send the request to the TTS API
+            const response = await fetch('/text-to-speech/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({text: text}),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to convert text to speech');
+            }
+
+            // Get the audio blob
+            const audioBlob = await response.blob();
+
+            // Create a URL for the audio blob
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            // Set the audio source and show the player
+            chatGPTAudioPlayer.src = audioUrl;
+            chatGPTTTSResultDiv.classList.remove('hidden');
+
+            // Enable download button
+            chatGPTDownloadBtn.classList.remove('hidden');
+
+            // Remove any existing event listeners by cloning and replacing the button
+            const newChatGPTDownloadBtn = chatGPTDownloadBtn.cloneNode(true);
+            chatGPTDownloadBtn.parentNode.replaceChild(newChatGPTDownloadBtn, chatGPTDownloadBtn);
+            // Update the reference to the new button
+            const chatGPTDownloadBtnRef = document.getElementById('chatgpt-download-btn');
+
+            chatGPTDownloadBtnRef.addEventListener('click', function () {
+                const a = document.createElement('a');
+                a.href = audioUrl;
+                a.download = 'chatgpt-response.mp3';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+
+        } catch (error) {
+            console.error('Error:', error);
+            chatGPTTTSErrorDiv.classList.remove('hidden');
+        } finally {
+            // Hide loading
+            chatGPTTTSLoadingDiv.classList.add('hidden');
+        }
+    }
+
     tabBtns.forEach(btn => {
         btn.addEventListener('click', function () {
             // Remove active class from all buttons and contents
@@ -259,9 +322,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const sttChatGPTResultDiv = document.getElementById('stt-chatgpt-result');
     const chatGPTTranscriptionText = document.getElementById('chatgpt-transcription-text');
     const chatGPTResponseText = document.getElementById('chatgpt-response-text');
-    const chatGPTCopyBtn = document.getElementById('chatgpt-copy-btn');
     const sttChatGPTLoadingDiv = document.getElementById('stt-chatgpt-loading');
     const sttChatGPTErrorDiv = document.getElementById('stt-chatgpt-error');
+
+    // ChatGPT TTS functionality
+    const chatGPTTTSResultDiv = document.getElementById('chatgpt-tts-result');
+    const chatGPTAudioPlayer = document.getElementById('chatgpt-audio-player');
+    const chatGPTDownloadBtn = document.getElementById('chatgpt-download-btn');
+    const chatGPTTTSLoadingDiv = document.getElementById('chatgpt-tts-loading');
+    const chatGPTTTSErrorDiv = document.getElementById('chatgpt-tts-error');
 
     // Handle STT to ChatGPT upload form submission
     sttChatGPTUploadForm.addEventListener('submit', async function (e) {
@@ -297,32 +366,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get the response data
             const data = await response.json();
 
-            // Display the ChatGPT response
-            // Note: The API doesn't return the transcribed text separately, only the response
-            chatGPTTranscriptionText.textContent = "Audio processed successfully";
-            chatGPTResponseText.textContent = data.response;
+            // Hide loading and error states
+            sttChatGPTLoadingDiv.classList.add('hidden');
+            sttChatGPTErrorDiv.classList.add('hidden');
+
+            // Display the transcribed text and ChatGPT response
+            if (data.text) {
+                chatGPTTranscriptionText.textContent = data.text;
+            } else {
+                chatGPTTranscriptionText.textContent = 'No transcription available';
+            }
+
+            if (data.response) {
+                chatGPTResponseText.textContent = data.response;
+                // Automatically convert the response to speech
+                convertChatGPTResponseToSpeech(data.response);
+            } else {
+                chatGPTResponseText.textContent = 'No response available';
+            }
+
+            // Show the result container
             sttChatGPTResultDiv.classList.remove('hidden');
-
-            // Set up copy button
-            // Remove any existing event listeners by cloning and replacing the button
-            const newChatGPTCopyBtn = chatGPTCopyBtn.cloneNode(true);
-            chatGPTCopyBtn.parentNode.replaceChild(newChatGPTCopyBtn, chatGPTCopyBtn);
-            // Update the reference to the new button
-            const chatGPTCopyBtnRef = document.getElementById('chatgpt-copy-btn');
-
-            chatGPTCopyBtnRef.addEventListener('click', function () {
-                navigator.clipboard.writeText(data.response)
-                    .then(() => {
-                        const originalText = chatGPTCopyBtnRef.textContent;
-                        chatGPTCopyBtnRef.textContent = 'Copied!';
-                        setTimeout(() => {
-                            chatGPTCopyBtnRef.textContent = originalText;
-                        }, 2000);
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy text: ', err);
-                    });
-            });
 
         } catch (error) {
             console.error('Error:', error);
@@ -369,32 +433,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get the response data
             const data = await response.json();
 
-            // Display the ChatGPT response
-            // Note: The API doesn't return the transcribed text separately, only the response
-            chatGPTTranscriptionText.textContent = "Audio processed successfully";
-            chatGPTResponseText.textContent = data.response;
+            // Hide loading and error states
+            sttChatGPTLoadingDiv.classList.add('hidden');
+            sttChatGPTErrorDiv.classList.add('hidden');
+
+            // Display the transcribed text and ChatGPT response
+            if (data.text) {
+                chatGPTTranscriptionText.textContent = data.text;
+            } else {
+                chatGPTTranscriptionText.textContent = 'No transcription available';
+            }
+
+            if (data.response) {
+                chatGPTResponseText.textContent = data.response;
+                // Automatically convert the response to speech
+                convertChatGPTResponseToSpeech(data.response);
+            } else {
+                chatGPTResponseText.textContent = 'No response available';
+            }
+
+            // Show the result container
             sttChatGPTResultDiv.classList.remove('hidden');
-
-            // Set up copy button
-            // Remove any existing event listeners by cloning and replacing the button
-            const newChatGPTCopyBtn = chatGPTCopyBtn.cloneNode(true);
-            chatGPTCopyBtn.parentNode.replaceChild(newChatGPTCopyBtn, chatGPTCopyBtn);
-            // Update the reference to the new button
-            const chatGPTCopyBtnRef = document.getElementById('chatgpt-copy-btn');
-
-            chatGPTCopyBtnRef.addEventListener('click', function () {
-                navigator.clipboard.writeText(data.response)
-                    .then(() => {
-                        const originalText = chatGPTCopyBtnRef.textContent;
-                        chatGPTCopyBtnRef.textContent = 'Copied!';
-                        setTimeout(() => {
-                            chatGPTCopyBtnRef.textContent = originalText;
-                        }, 2000);
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy text: ', err);
-                    });
-            });
 
         } catch (error) {
             console.error('Error:', error);
@@ -405,4 +464,5 @@ document.addEventListener('DOMContentLoaded', function() {
             chatGPTUrlBtn.disabled = false;
         }
     });
+
 });

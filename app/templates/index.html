@@ -135,8 +135,21 @@
                     <p id="chatgpt-response-text"></p>
                 </div>
 
-                <div class="controls">
-                    <button id="chatgpt-copy-btn">Copy Response</button>
+
+                <div class="audio-result hidden" id="chatgpt-tts-result">
+                    <h2>Generated Speech</h2>
+                    <audio controls id="chatgpt-audio-player"></audio>
+                    <div class="controls">
+                        <button class="hidden" id="chatgpt-download-btn">Download MP3</button>
+                    </div>
+                </div>
+
+                <div class="loading hidden" id="chatgpt-tts-loading">
+                    <p>Converting text to speech...</p>
+                </div>
+
+                <div class="error hidden" id="chatgpt-tts-error">
+                    <p>An error occurred during text-to-speech conversion. Please try again.</p>
                 </div>
             </div>
 
