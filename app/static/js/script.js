@@ -398,71 +398,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Handle STT to ChatGPT URL form submission
+    // Handle STT to ChatGPT URL form submission - Removed as endpoint is no longer available
     sttChatGPTUrlForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-
-        // Get the URL from the input
-        const audioUrl = chatGPTAudioUrlInput.value.trim();
-
-        if (!audioUrl) {
-            alert('Please enter an audio URL to convert.');
-            return;
-        }
-
-        // Show loading, hide other sections
-        sttChatGPTLoadingDiv.classList.remove('hidden');
-        sttChatGPTResultDiv.classList.add('hidden');
-        sttChatGPTErrorDiv.classList.add('hidden');
-        chatGPTUrlBtn.disabled = true;
-
-        try {
-            // Send the request to the API
-            const response = await fetch('/chatgpt/audio', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({audio_url: audioUrl}),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to process audio');
-            }
-
-            // Get the response data
-            const data = await response.json();
-
-            // Hide loading and error states
-            sttChatGPTLoadingDiv.classList.add('hidden');
-            sttChatGPTErrorDiv.classList.add('hidden');
-
-            // Display the transcribed text and ChatGPT response
-            if (data.text) {
-                chatGPTTranscriptionText.textContent = data.text;
-            } else {
-                chatGPTTranscriptionText.textContent = 'No transcription available';
-            }
-
-            if (data.response) {
-                chatGPTResponseText.textContent = data.response;
-                // Automatically convert the response to speech
-                convertChatGPTResponseToSpeech(data.response);
-            } else {
-                chatGPTResponseText.textContent = 'No response available';
-            }
-
-            // Show the result container
-            sttChatGPTResultDiv.classList.remove('hidden');
-
-        } catch (error) {
-            console.error('Error:', error);
-            sttChatGPTErrorDiv.classList.remove('hidden');
-        } finally {
-            // Hide loading and re-enable button
-            sttChatGPTLoadingDiv.classList.add('hidden');
-            chatGPTUrlBtn.disabled = false;
-        }
+        alert('This feature has been removed.');
     });
 
 });

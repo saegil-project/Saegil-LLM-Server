@@ -4,8 +4,7 @@ ChatGPT 기능을 위한 API 라우트.
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 
 from app.dependencies import get_chatgpt_service, get_speech_to_text_service
-from app.models.chatgpt import ChatGPTQuery, ChatGPTResponse, STTChatGPTQuery
-from app.models.speech_to_text import AudioQuery
+from app.models.chatgpt import ChatGPTQuery, ChatGPTResponse
 from app.services.chatgpt_service import ChatGPTService
 from app.services.speech_to_text_service import SpeechToTextService
 
@@ -43,71 +42,8 @@ async def get_chatgpt_response(
         )
 
 
-@router.post("/stt", response_model=ChatGPTResponse, summary="STT로 변환된 텍스트에 대한 ChatGPT 응답 가져오기")
-async def get_chatgpt_response_from_stt(
-        query: STTChatGPTQuery,
-        chatgpt_service: ChatGPTService = Depends(get_chatgpt_service)
-):
-    """
-    STT로 변환된 텍스트에 대한 ChatGPT 응답을 가져옵니다.
-
-    Args:
-        query: STT로 변환된 텍스트
-        chatgpt_service: ChatGPT 서비스 (주입됨)
-
-    Returns:
-        ChatGPT의 응답이 포함된 응답
-
-    Raises:
-        HTTPException: ChatGPT 응답을 가져오는 중 오류가 발생한 경우
-    """
-    try:
-        # 서비스를 사용하여 ChatGPT 응답 가져오기
-        response_text = chatgpt_service.get_response(query.audio_text)
-
-        # 응답 반환
-        return ChatGPTResponse(response=response_text)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"ChatGPT 응답을 가져오는 중 오류 발생: {str(e)}"
-        )
 
 
-@router.post("/audio", response_model=ChatGPTResponse, summary="오디오 URL에서 STT로 변환 후 ChatGPT 응답 가져오기")
-async def get_chatgpt_response_from_audio(
-        query: AudioQuery,
-        stt_service: SpeechToTextService = Depends(get_speech_to_text_service),
-        chatgpt_service: ChatGPTService = Depends(get_chatgpt_service)
-):
-    """
-    오디오 URL에서 음성을 텍스트로 변환한 후 ChatGPT 응답을 가져옵니다.
-
-    Args:
-        query: 텍스트로 변환할 오디오 쿼리
-        stt_service: 음성-텍스트 변환 서비스 (주입됨)
-        chatgpt_service: ChatGPT 서비스 (주입됨)
-
-    Returns:
-        ChatGPT의 응답이 포함된 응답
-
-    Raises:
-        HTTPException: 처리 중 오류가 발생한 경우
-    """
-    try:
-        # 서비스를 사용하여 음성을 텍스트로 변환
-        text = stt_service.speech_to_text(str(query.audio_url))
-
-        # 서비스를 사용하여 ChatGPT 응답 가져오기
-        response_text = chatgpt_service.get_response(text)
-
-        # 응답 반환 (텍스트 포함)
-        return ChatGPTResponse(response=response_text, text=text)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"오디오를 처리하는 중 오류 발생: {str(e)}"
-        )
 
 
 @router.post("/upload", response_model=ChatGPTResponse, summary="MP3 파일 업로드로 STT 변환 후 ChatGPT 응답 가져오기")
