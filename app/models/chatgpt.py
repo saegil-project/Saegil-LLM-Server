@@ -36,16 +36,3 @@ class ChatGPTResponse(BaseModel):
     }
 
 
-class STTChatGPTQuery(BaseModel):
-    """
-    STT로 변환된 텍스트를 ChatGPT에게 보내기 위한 모델.
-    """
-    audio_text: str = Field(..., description="STT로 변환된 텍스트")
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "audio_text": "오늘 날씨가 어떤가요?"
-            }
-        }
-    }
