@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 9090
 
 # FastAPI 실행 명령
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "9090"]
+CMD ["uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "9090"]
