@@ -258,6 +258,55 @@ curl -X POST "http://localhost:9090/chatgpt/upload" \
 
 이 API는 `/app/api/v1/chatgpt_controller.py` 파일에 구현되어 있으며, OpenAI GPT-4o 모델을 사용하여 텍스트 쿼리에 대한 응답을 생성합니다.
 
+#### STT-ChatGPT-TTS 통합 처리 (STT-ChatGPT-TTS)
+
+STT-ChatGPT-TTS 통합 처리 API 엔드포인트는 음성을 텍스트로 변환하고, ChatGPT 응답을 생성한 후, 응답을 음성으로 변환하는 통합 기능을 제공합니다:
+
+##### 1. MP3 파일 업로드를 통한 통합 처리 (오디오 응답)
+
+- 엔드포인트: `/stt-chatgpt-tts/upload`
+- 메소드: POST
+- 요청 형식: 멀티파트 폼 데이터 (파일 필드 이름: `file`)
+- 응답: MP3 형식의 오디오 스트림
+
+이 API는 MP3 파일을 업로드하여 음성을 텍스트로 변환하고, ChatGPT 응답을 생성한 후, 응답을 음성으로 변환하여 오디오 스트림으로 반환합니다.
+
+```bash
+curl -X POST "http://localhost:9090/stt-chatgpt-tts/upload" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@/path/to/your/audio.mp3" \
+     --output response.mp3
+```
+
+응답으로 MP3 형식의 오디오 스트림이 반환됩니다.
+
+##### 2. MP3 파일 업로드를 통한 통합 처리 (JSON 응답)
+
+- 엔드포인트: `/stt-chatgpt-tts/upload/json`
+- 메소드: POST
+- 요청 형식: 멀티파트 폼 데이터 (파일 필드 이름: `file`)
+- 응답: JSON (`{"text": "변환된 텍스트", "response": "ChatGPT의 응답 텍스트", "audio_url": "생성된 오디오 파일의 URL"}`)
+
+이 API는 MP3 파일을 업로드하여 음성을 텍스트로 변환하고, ChatGPT 응답을 생성한 후, 응답 정보를 JSON으로 반환합니다.
+
+```bash
+curl -X POST "http://localhost:9090/stt-chatgpt-tts/upload/json" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@/path/to/your/audio.mp3"
+```
+
+응답 예시:
+
+```json
+{
+  "text": "오늘 날씨가 어떤가요?",
+  "response": "안녕하세요! 오늘 날씨는 지역에 따라 다를 수 있습니다. 특정 지역을 알려주시면 더 정확한 정보를 제공해 드릴 수 있습니다.",
+  "audio_url": "/stt-chatgpt-tts/audio/response.mp3"
+}
+```
+
+이 API는 `/app/api/v1/stt_chatgpt_tts_controller.py` 파일에 구현되어 있으며, 음성-텍스트 변환, ChatGPT 응답 생성, 텍스트-음성 변환을 통합하여 처리합니다.
+
 ## API 문서
 
 FastAPI의 자동 생성 문서는 다음 URL에서 확인할 수 있습니다:
@@ -286,6 +335,8 @@ Swagger UI는 클라이언트 개발자를 위한 강력한 도구로, 다음과
 - `POST /chatgpt/stt`: STT로 변환된 텍스트를 통해 ChatGPT 응답 가져오기
 - `POST /chatgpt/audio`: 오디오 URL을 통해 음성을 텍스트로 변환한 후 ChatGPT 응답 가져오기
 - `POST /chatgpt/upload`: MP3 파일 업로드를 통해 음성을 텍스트로 변환한 후 ChatGPT 응답 가져오기
+- `POST /stt-chatgpt-tts/upload`: MP3 파일 업로드를 통해 음성을 텍스트로 변환, ChatGPT 응답 생성, 응답을 음성으로 변환하여 반환
+- `POST /stt-chatgpt-tts/upload/json`: MP3 파일 업로드를 통해 음성을 텍스트로 변환, ChatGPT 응답 생성, 응답 정보를 JSON으로 반환
 
 ### API 태그
 
@@ -294,6 +345,7 @@ API 엔드포인트는 다음과 같은 태그로 구분됩니다:
 - **text-to-speech**: 텍스트를 음성으로 변환하는 엔드포인트
 - **speech-to-text**: 음성을 텍스트로 변환하는 엔드포인트
 - **chatgpt**: ChatGPT를 통한 텍스트 응답 관련 엔드포인트
+- **stt-chatgpt-tts**: 음성-텍스트 변환, ChatGPT 응답, 텍스트-음성 변환을 통합한 엔드포인트
 - **frontend**: 웹 애플리케이션 프론트엔드 관련 엔드포인트
 
 ## 주의사항

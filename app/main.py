@@ -16,6 +16,14 @@ tags_metadata = [
         "description": "OpenAI API를 사용한 음성-텍스트 변환 관련 작업.",
     },
     {
+        "name": "chatgpt",
+        "description": "OpenAI API를 사용한 ChatGPT 응답 관련 작업.",
+    },
+    {
+        "name": "stt-chatgpt-tts",
+        "description": "음성-텍스트 변환, ChatGPT 응답, 텍스트-음성 변환을 통합한 작업.",
+    },
+    {
         "name": "frontend",
         "description": "웹 애플리케이션 프론트엔드 제공 관련 작업.",
     },

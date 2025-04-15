@@ -33,3 +33,35 @@ Content-Type: application/json
 # This request should return a CSS file from the static directory
 GET http://localhost:9090/static/css/style.css
 Accept: text/css
+
+### Test the STT-ChatGPT-TTS endpoint (POST /stt-chatgpt-tts/upload)
+# Note: This endpoint requires a file upload, which is not easily done in this HTTP file.
+# Use curl or Postman to test this endpoint with a real audio file.
+# 
+# Example curl command:
+# curl -X POST http://localhost:9090/stt-chatgpt-tts/upload \
+#   -H "Content-Type: multipart/form-data" \
+#   -F "file=@/path/to/your/audio.mp3" \
+#   --output response.mp3
+#
+# Example Postman setup:
+# 1. Set request type to POST
+# 2. Enter URL: http://localhost:9090/stt-chatgpt-tts/upload
+# 3. Go to Body tab, select form-data
+# 4. Add key "file" of type File and select your audio file
+# 5. Send the request and save the audio response
+
+### Test the STT-ChatGPT-TTS JSON endpoint (POST /stt-chatgpt-tts/upload/json)
+# Note: This endpoint also requires a file upload, but returns JSON instead of audio.
+# 
+# Example curl command:
+# curl -X POST http://localhost:9090/stt-chatgpt-tts/upload/json \
+#   -H "Content-Type: multipart/form-data" \
+#   -F "file=@/path/to/your/audio.mp3"
+#
+# Example Postman setup:
+# 1. Set request type to POST
+# 2. Enter URL: http://localhost:9090/stt-chatgpt-tts/upload/json
+# 3. Go to Body tab, select form-data
+# 4. Add key "file" of type File and select your audio file
+# 5. Send the request to get JSON response with text, response, and audio_url

@@ -1,5 +1,5 @@
 # 베이스 이미지
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 9090
 
 # FastAPI 실행 명령
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "9090"]
+CMD ["uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "9090"]
