@@ -1,7 +1,7 @@
 """
 OpenAI Assistants API를 위한 API 라우트.
 """
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 
 from app.dependencies import get_assistant_service, get_speech_to_text_service
 from app.models.assistant import AssistantQuery, AssistantResponse
@@ -14,6 +14,7 @@ router = APIRouter(prefix="/assistant", tags=["assistant"])
 @router.post("/", response_model=AssistantResponse, summary="텍스트 쿼리에 대한 Assistant 응답 가져오기")
 async def get_assistant_response(
         query: AssistantQuery,
+        thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
         assistant_service: AssistantService = Depends(get_assistant_service)
 ):
     """
@@ -23,7 +24,8 @@ async def get_assistant_response(
     thread_id를 제공하면 기존 대화를 계속하고, 제공하지 않으면 새 대화를 시작합니다.
 
     Args:
-        query: Assistant에게 보낼 텍스트 쿼리와 선택적 thread_id
+        query: Assistant에게 보낼 텍스트 쿼리
+        thread_id: 대화 스레드 ID (없으면 새로 생성됨)
         assistant_service: Assistant 서비스 (주입됨)
 
     Returns:
@@ -33,8 +35,11 @@ async def get_assistant_response(
         HTTPException: Assistant 응답을 가져오는 중 오류가 발생한 경우
     """
     try:
+        # Query 매개변수의 thread_id를 우선적으로 사용하고, 없으면 body의 thread_id 사용
+        effective_thread_id = thread_id or query.thread_id
+        
         # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, thread_id = assistant_service.get_response(query.text, query.thread_id)
+        response_text, thread_id = assistant_service.get_response(query.text, effective_thread_id)
 
         # 응답 반환
         return AssistantResponse(response=response_text, thread_id=thread_id, text=query.text)
@@ -48,7 +53,7 @@ async def get_assistant_response(
 @router.post("/upload", response_model=AssistantResponse, summary="MP3 파일 업로드로 STT 변환 후 Assistant 응답 가져오기")
 async def get_assistant_response_from_upload(
         file: UploadFile = File(...),
-        thread_id: str = None,
+        thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
         stt_service: SpeechToTextService = Depends(get_speech_to_text_service),
         assistant_service: AssistantService = Depends(get_assistant_service)
 ):
@@ -60,7 +65,7 @@ async def get_assistant_response_from_upload(
 
     Args:
         file: 텍스트로 변환할 오디오 파일 (MP3 형식)
-        thread_id: 선택적 대화 스레드 ID
+        thread_id: 대화 스레드 ID (없으면 새로 생성됨)
         stt_service: 음성-텍스트 변환 서비스 (주입됨)
         assistant_service: Assistant 서비스 (주입됨)
 
