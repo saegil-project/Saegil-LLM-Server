@@ -20,7 +20,7 @@ class Settings(BaseModel):
     ELEVENLABS_API_KEY: str = Field(default_factory=lambda: os.getenv("ELEVENLABS_API_KEY", ""))
     ELEVENLABS_VOICE_ID: str = Field(
         default_factory=lambda: os.getenv("ELEVENLABS_VOICE_ID", "uyVNoMrnUku1dZyVEXwD"))  # Adam pre-made voice
-    ELEVENLABS_MODEL_ID: str = Field(default_factory=lambda: os.getenv("ELEVENLABS_MODEL_ID", "eleven_flash_v2_5"))
+    ELEVENLABS_MODEL_ID: str = Field(default_factory=lambda: os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"))
 
     # OpenAI settings
     OPENAI_API_KEY: str = Field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
