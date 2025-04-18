@@ -2,11 +2,13 @@
 OpenAI Assistants API를 위한 API 라우트.
 """
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
+from fastapi.responses import StreamingResponse
 
-from app.dependencies import get_assistant_service, get_speech_to_text_service
+from app.dependencies import get_assistant_service, get_speech_to_text_service, get_text_to_speech_service
 from app.models.assistant import AssistantQuery, AssistantResponse
 from app.services.assistant_service import AssistantService
 from app.services.speech_to_text_service import SpeechToTextService
+from app.services.text_to_speech_service import TextToSpeechService
 
 router = APIRouter(prefix="/assistant", tags=["assistant"])
 
@@ -91,6 +93,119 @@ async def get_assistant_response_from_upload(
 
         # 응답 반환 (텍스트 포함)
         return AssistantResponse(response=response_text, thread_id=new_thread_id, text=text)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"업로드된 오디오를 처리하는 중 오류 발생: {str(e)}"
+        )
+
+
+@router.post("/audio", summary="텍스트 쿼리에 대한 Assistant 응답을 음성으로 가져오기")
+async def get_assistant_audio_response(
+        query: AssistantQuery,
+        thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
+        assistant_service: AssistantService = Depends(get_assistant_service),
+        tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
+):
+    """
+    텍스트 쿼리에 대한 OpenAI Assistant 응답을 음성으로 변환하여 반환합니다.
+    
+    이 엔드포인트는 대화 문맥을 유지하면서 응답을 생성하고, 생성된 텍스트 응답을 
+    ElevenLabs를 사용하여 음성으로 변환합니다.
+    thread_id를 제공하면 기존 대화를 계속하고, 제공하지 않으면 새 대화를 시작합니다.
+
+    Args:
+        query: Assistant에게 보낼 텍스트 쿼리
+        thread_id: 대화 스레드 ID (없으면 새로 생성됨)
+        assistant_service: Assistant 서비스 (주입됨)
+        tts_service: 텍스트-음성 변환 서비스 (주입됨)
+
+    Returns:
+        음성 데이터를 포함한 스트리밍 응답
+
+    Raises:
+        HTTPException: Assistant 응답을 가져오거나 음성 변환 중 오류가 발생한 경우
+    """
+    try:
+        # Query 매개변수의 thread_id를 우선적으로 사용하고, 없으면 body의 thread_id 사용
+        effective_thread_id = thread_id or query.thread_id
+
+        # 서비스를 사용하여 Assistant 응답 가져오기
+        response_text, new_thread_id = assistant_service.get_response(query.text, effective_thread_id)
+
+        # 응답 텍스트를 음성으로 변환
+        audio_stream = tts_service.text_to_speech_stream(response_text)
+
+        # 오디오 스트림 반환
+        return StreamingResponse(
+            audio_stream,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f"attachment; filename=assistant_response.mp3"
+            }
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Assistant 음성 응답을 가져오는 중 오류 발생: {str(e)}"
+        )
+
+
+@router.post("/upload/audio", summary="MP3 파일 업로드로 STT 변환 후 Assistant 응답을 음성으로 가져오기")
+async def get_assistant_audio_response_from_upload(
+        file: UploadFile = File(...),
+        thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
+        stt_service: SpeechToTextService = Depends(get_speech_to_text_service),
+        assistant_service: AssistantService = Depends(get_assistant_service),
+        tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
+):
+    """
+    업로드된 MP3 파일에서 음성을 텍스트로 변환한 후 OpenAI Assistant 응답을 음성으로 반환합니다.
+    
+    이 엔드포인트는 대화 문맥을 유지하면서 응답을 생성하고, 생성된 텍스트 응답을
+    ElevenLabs를 사용하여 음성으로 변환합니다.
+    thread_id를 제공하면 기존 대화를 계속하고, 제공하지 않으면 새 대화를 시작합니다.
+
+    Args:
+        file: 텍스트로 변환할 오디오 파일 (MP3 형식)
+        thread_id: 대화 스레드 ID (없으면 새로 생성됨)
+        stt_service: 음성-텍스트 변환 서비스 (주입됨)
+        assistant_service: Assistant 서비스 (주입됨)
+        tts_service: 텍스트-음성 변환 서비스 (주입됨)
+
+    Returns:
+        음성 데이터를 포함한 스트리밍 응답
+
+    Raises:
+        HTTPException: 처리 중 오류가 발생한 경우
+    """
+    try:
+        # 파일 유형 확인
+        if not file.content_type.startswith("audio/"):
+            raise HTTPException(
+                status_code=400,
+                detail="오디오 파일만 업로드할 수 있습니다."
+            )
+
+        # 서비스를 사용하여 음성을 텍스트로 변환
+        text = await stt_service.speech_to_text_from_file(file)
+
+        # 서비스를 사용하여 Assistant 응답 가져오기
+        response_text, new_thread_id = assistant_service.get_response(text, thread_id)
+
+        # 응답 텍스트를 음성으로 변환
+        audio_stream = tts_service.text_to_speech_stream(response_text)
+
+        # 오디오 스트림 반환
+        return StreamingResponse(
+            audio_stream,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f"attachment; filename=assistant_response.mp3"
+            }
+        )
     except HTTPException:
         raise
     except Exception as e:
