@@ -27,6 +27,11 @@ class Settings(BaseModel):
     OPENAI_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_MODEL", "whisper-1"))
     OPENAI_CHAT_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini"))
 
+    # OpenAI Assistants settings
+    OPENAI_ASSISTANT_ID: str = Field(
+        default_factory=lambda: os.getenv("OPENAI_ASSISTANT_ID", "asst_cEaABZPKv6EUOHnIVp9fjkqd"))
+    OPENAI_ASSISTANT_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_ASSISTANT_MODEL", "gpt-4o-mini"))
+
     model_config = {
         "env_file": ".env",
         "case_sensitive": True
