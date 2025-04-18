@@ -20,12 +20,21 @@ class Settings(BaseModel):
     ELEVENLABS_API_KEY: str = Field(default_factory=lambda: os.getenv("ELEVENLABS_API_KEY", ""))
     ELEVENLABS_VOICE_ID: str = Field(
         default_factory=lambda: os.getenv("ELEVENLABS_VOICE_ID", "uyVNoMrnUku1dZyVEXwD"))  # Adam pre-made voice
-    ELEVENLABS_MODEL_ID: str = Field(default_factory=lambda: os.getenv("ELEVENLABS_MODEL_ID", "eleven_flash_v2_5"))
+    ELEVENLABS_MODEL_ID: str = Field(default_factory=lambda: os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"))
 
     # OpenAI settings
     OPENAI_API_KEY: str = Field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
     OPENAI_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_MODEL", "whisper-1"))
     OPENAI_CHAT_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini"))
+
+    # OpenAI TTS settings
+    OPENAI_TTS_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_TTS_MODEL", "tts-1"))
+    OPENAI_TTS_VOICE: str = Field(default_factory=lambda: os.getenv("OPENAI_TTS_VOICE", "alloy"))
+
+    # OpenAI Assistants settings
+    OPENAI_ASSISTANT_ID: str = Field(
+        default_factory=lambda: os.getenv("OPENAI_ASSISTANT_ID", "asst_cEaABZPKv6EUOHnIVp9fjkqd"))
+    OPENAI_ASSISTANT_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_ASSISTANT_MODEL", "gpt-4o-mini"))
 
     model_config = {
         "env_file": ".env",

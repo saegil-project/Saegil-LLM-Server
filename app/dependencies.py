@@ -2,6 +2,7 @@
 애플리케이션을 위한 의존성 주입 함수.
 """
 
+from app.services.assistant_service import AssistantService, assistant_service
 from app.services.chatgpt_service import ChatGPTService, chatgpt_service
 from app.services.speech_to_text_service import SpeechToTextService, speech_to_text_service
 from app.services.text_to_speech_service import TextToSpeechService, text_to_speech_service
@@ -35,3 +36,13 @@ def get_chatgpt_service() -> ChatGPTService:
         ChatGPTService의 인스턴스
     """
     return chatgpt_service
+
+
+def get_assistant_service() -> AssistantService:
+    """
+    OpenAI Assistants 서비스를 가져오기 위한 의존성.
+
+    Returns:
+        AssistantService의 인스턴스
+    """
+    return assistant_service

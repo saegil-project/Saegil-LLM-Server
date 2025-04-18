@@ -8,3 +8,5 @@ jinja2
 openai
 python-multipart
 pydantic
+pytest
+email-validator
