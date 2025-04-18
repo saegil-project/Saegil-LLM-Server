@@ -27,6 +27,10 @@ class Settings(BaseModel):
     OPENAI_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_MODEL", "whisper-1"))
     OPENAI_CHAT_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini"))
 
+    # OpenAI TTS settings
+    OPENAI_TTS_MODEL: str = Field(default_factory=lambda: os.getenv("OPENAI_TTS_MODEL", "tts-1"))
+    OPENAI_TTS_VOICE: str = Field(default_factory=lambda: os.getenv("OPENAI_TTS_VOICE", "alloy"))
+
     # OpenAI Assistants settings
     OPENAI_ASSISTANT_ID: str = Field(
         default_factory=lambda: os.getenv("OPENAI_ASSISTANT_ID", "asst_cEaABZPKv6EUOHnIVp9fjkqd"))

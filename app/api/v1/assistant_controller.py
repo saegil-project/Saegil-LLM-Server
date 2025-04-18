@@ -1,6 +1,8 @@
 """
 OpenAI Assistants API를 위한 API 라우트.
 """
+from typing import Literal
+
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from fastapi.responses import StreamingResponse
 
@@ -106,6 +108,7 @@ async def get_assistant_response_from_upload(
 async def get_assistant_audio_response(
         query: AssistantQuery,
         thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
+        provider: Literal["elevenlabs", "openai"] = Query(default="openai", description="사용할 음성 제공자"),
         assistant_service: AssistantService = Depends(get_assistant_service),
         tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
 ):
@@ -113,12 +116,13 @@ async def get_assistant_audio_response(
     텍스트 쿼리에 대한 OpenAI Assistant 응답을 음성으로 변환하여 반환합니다.
     
     이 엔드포인트는 대화 문맥을 유지하면서 응답을 생성하고, 생성된 텍스트 응답을 
-    ElevenLabs를 사용하여 음성으로 변환합니다.
+    OpenAI 또는 ElevenLabs를 사용하여 음성으로 변환합니다.
     thread_id를 제공하면 기존 대화를 계속하고, 제공하지 않으면 새 대화를 시작합니다.
 
     Args:
         query: Assistant에게 보낼 텍스트 쿼리
         thread_id: 대화 스레드 ID (없으면 새로 생성됨)
+        provider: 사용할 음성 제공자 ("elevenlabs" 또는 "openai")
         assistant_service: Assistant 서비스 (주입됨)
         tts_service: 텍스트-음성 변환 서비스 (주입됨)
 
@@ -135,8 +139,8 @@ async def get_assistant_audio_response(
         # 서비스를 사용하여 Assistant 응답 가져오기
         response_text, new_thread_id = assistant_service.get_response(query.text, effective_thread_id)
 
-        # 응답 텍스트를 음성으로 변환
-        audio_stream = tts_service.text_to_speech_stream(response_text)
+        # 응답 텍스트를 음성으로 변환 (기본적으로 OpenAI의 TTS 사용)
+        audio_stream = tts_service.text_to_speech_stream(response_text, provider=provider)
 
         # 오디오 스트림 반환
         return StreamingResponse(
@@ -157,6 +161,7 @@ async def get_assistant_audio_response(
 async def get_assistant_audio_response_from_upload(
         file: UploadFile = File(...),
         thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
+        provider: Literal["elevenlabs", "openai"] = Query(default="openai", description="사용할 음성 제공자"),
         stt_service: SpeechToTextService = Depends(get_speech_to_text_service),
         assistant_service: AssistantService = Depends(get_assistant_service),
         tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
@@ -165,12 +170,13 @@ async def get_assistant_audio_response_from_upload(
     업로드된 MP3 파일에서 음성을 텍스트로 변환한 후 OpenAI Assistant 응답을 음성으로 반환합니다.
     
     이 엔드포인트는 대화 문맥을 유지하면서 응답을 생성하고, 생성된 텍스트 응답을
-    ElevenLabs를 사용하여 음성으로 변환합니다.
+    OpenAI 또는 ElevenLabs를 사용하여 음성으로 변환합니다.
     thread_id를 제공하면 기존 대화를 계속하고, 제공하지 않으면 새 대화를 시작합니다.
 
     Args:
         file: 텍스트로 변환할 오디오 파일 (MP3 형식)
         thread_id: 대화 스레드 ID (없으면 새로 생성됨)
+        provider: 사용할 음성 제공자 ("elevenlabs" 또는 "openai")
         stt_service: 음성-텍스트 변환 서비스 (주입됨)
         assistant_service: Assistant 서비스 (주입됨)
         tts_service: 텍스트-음성 변환 서비스 (주입됨)
@@ -195,8 +201,8 @@ async def get_assistant_audio_response_from_upload(
         # 서비스를 사용하여 Assistant 응답 가져오기
         response_text, new_thread_id = assistant_service.get_response(text, thread_id)
 
-        # 응답 텍스트를 음성으로 변환
-        audio_stream = tts_service.text_to_speech_stream(response_text)
+        # 응답 텍스트를 음성으로 변환 (기본적으로 OpenAI의 TTS 사용)
+        audio_stream = tts_service.text_to_speech_stream(response_text, provider=provider)
 
         # 오디오 스트림 반환
         return StreamingResponse(
