@@ -52,10 +52,8 @@ async def get_assistant_response(
         HTTPException: Assistant 응답을 가져오는 중 오류가 발생한 경우
     """
     try:
-        # Query 매개변수의 thread_id를 우선적으로 사용하고, 없으면 body의 thread_id 사용
-        raw_thread_id = thread_id or query.thread_id
-        # thread_id 유효성 검사
-        validated_thread_id = _validate_thread_id(raw_thread_id)
+        # Query 매개변수의 thread_id만 사용하도록 수정
+        validated_thread_id = _validate_thread_id(thread_id)
         logger.info(f"Assistant 서비스 호출 전 thread_id: {validated_thread_id}") # 로깅 추가
         
         # 서비스를 사용하여 Assistant 응답 가져오기
@@ -163,10 +161,8 @@ async def get_assistant_audio_response(
         HTTPException: Assistant 응답을 가져오거나 음성 변환 중 오류가 발생한 경우
     """
     try:
-        # Query 매개변수의 thread_id를 우선적으로 사용하고, 없으면 body의 thread_id 사용
-        raw_thread_id = thread_id or query.thread_id
-        # thread_id 유효성 검사
-        validated_thread_id = _validate_thread_id(raw_thread_id)
+        # Query 매개변수의 thread_id만 사용하도록 수정
+        validated_thread_id = _validate_thread_id(thread_id)
         logger.info(f"Assistant 서비스 호출 전 (audio) thread_id: {validated_thread_id}") # 로깅 추가
 
         # 서비스를 사용하여 Assistant 응답 가져오기
