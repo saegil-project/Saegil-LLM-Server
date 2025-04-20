@@ -1,7 +1,7 @@
 """
 ChatGPT 기능을 위한 Pydantic 모델.
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class ChatGPTQuery(BaseModel):
@@ -14,6 +14,36 @@ class ChatGPTQuery(BaseModel):
         "json_schema_extra": {
             "example": {
                 "text": "안녕하세요, 오늘 날씨가 어떤가요?"
+            }
+        }
+    }
+
+
+class ChatGPTSttQuery(BaseModel):
+    """
+    음성에서 변환된 텍스트를 ChatGPT에게 전달하기 위한 모델.
+    """
+    audio_text: str = Field(..., description="음성에서 변환된 텍스트 쿼리")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "audio_text": "오늘 날씨가 어떤가요?"
+            }
+        }
+    }
+
+
+class ChatGPTAudioUrlQuery(BaseModel):
+    """
+    오디오 URL을 ChatGPT 처리를 위해 전달하기 위한 모델.
+    """
+    audio_url: HttpUrl = Field(..., description="텍스트로 변환할 오디오 파일의 URL")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "audio_url": "https://example.com/audio/sample.mp3"
             }
         }
     }

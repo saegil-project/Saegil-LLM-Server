@@ -7,10 +7,11 @@ from app.dependencies import get_speech_to_text_service
 from app.models.speech_to_text import AudioQuery, TranscriptionResult
 from app.services.speech_to_text_service import SpeechToTextService
 
-router = APIRouter(prefix="/speech-to-text", tags=["speech-to-text"])
+# 라우터 경로를 /api/v1/speech-to-text로 변경
+router = APIRouter(prefix="/api/v1/speech-to-text", tags=["speech-to-text"])
 
 
-@router.post("/", response_model=TranscriptionResult, summary="오디오 URL에서 음성을 텍스트로 변환")
+@router.post("/audio-url", response_model=TranscriptionResult, summary="오디오 URL에서 음성을 텍스트로 변환")
 async def convert_speech_to_text(
         query: AudioQuery,
         stt_service: SpeechToTextService = Depends(get_speech_to_text_service)

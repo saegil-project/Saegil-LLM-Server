@@ -10,7 +10,8 @@ from app.dependencies import get_text_to_speech_service
 from app.models.text_to_speech import TextQuery
 from app.services.text_to_speech_service import TextToSpeechService
 
-router = APIRouter(prefix="/text-to-speech", tags=["text-to-speech"])
+# 라우터 경로를 /api/v1/text-to-speech로 변경
+router = APIRouter(prefix="/api/v1/text-to-speech", tags=["text-to-speech"])
 
 
 @router.post("/", summary="텍스트를 음성으로 변환")

@@ -1,7 +1,8 @@
 """
 OpenAI Assistants API를 위한 API 라우트.
 """
-from typing import Literal
+import logging
+from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from fastapi.responses import StreamingResponse
@@ -12,7 +13,19 @@ from app.services.assistant_service import AssistantService
 from app.services.speech_to_text_service import SpeechToTextService
 from app.services.text_to_speech_service import TextToSpeechService
 
-router = APIRouter(prefix="/assistant", tags=["assistant"])
+# 로깅 설정
+logger = logging.getLogger(__name__)
+
+# 라우터 경로를 /api/v1/assistant로 변경
+router = APIRouter(prefix="/api/v1/assistant", tags=["assistant"])
+
+
+def _validate_thread_id(thread_id: Optional[str]) -> Optional[str]:
+    """thread_id 유효성 검사. 'thread_'로 시작하지 않으면 None 반환."""
+    if thread_id and not thread_id.startswith("thread_"):
+        logger.warning(f"잘못된 형식의 thread_id 수신: {thread_id}. None으로 처리합니다.")
+        return None
+    return thread_id
 
 
 @router.post("/", response_model=AssistantResponse, summary="텍스트 쿼리에 대한 Assistant 응답 가져오기")
@@ -40,14 +53,22 @@ async def get_assistant_response(
     """
     try:
         # Query 매개변수의 thread_id를 우선적으로 사용하고, 없으면 body의 thread_id 사용
-        effective_thread_id = thread_id or query.thread_id
+        raw_thread_id = thread_id or query.thread_id
+        # thread_id 유효성 검사
+        validated_thread_id = _validate_thread_id(raw_thread_id)
+        logger.info(f"Assistant 서비스 호출 전 thread_id: {validated_thread_id}") # 로깅 추가
         
         # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, thread_id = assistant_service.get_response(query.text, effective_thread_id)
+        response_text, final_thread_id = assistant_service.get_response(query.text, validated_thread_id)
 
-        # 응답 반환
-        return AssistantResponse(response=response_text, thread_id=thread_id, text=query.text)
+        # 응답 반환 - Pydantic 모델이 자동으로 camelCase로 변환
+        return AssistantResponse(
+            response=response_text, 
+            thread_id=final_thread_id,
+            text=query.text
+        )
     except Exception as e:
+        logger.error(f"Assistant 응답 처리 중 오류 발생: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Assistant 응답을 가져오는 중 오류 발생: {str(e)}"
@@ -90,14 +111,23 @@ async def get_assistant_response_from_upload(
         # 서비스를 사용하여 음성을 텍스트로 변환
         text = await stt_service.speech_to_text_from_file(file)
 
-        # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, new_thread_id = assistant_service.get_response(text, thread_id)
+        # thread_id 유효성 검사
+        validated_thread_id = _validate_thread_id(thread_id)
+        logger.info(f"Assistant 서비스 호출 전 (upload) thread_id: {validated_thread_id}") # 로깅 추가
 
-        # 응답 반환 (텍스트 포함)
-        return AssistantResponse(response=response_text, thread_id=new_thread_id, text=text)
+        # 서비스를 사용하여 Assistant 응답 가져오기
+        response_text, final_thread_id = assistant_service.get_response(text, validated_thread_id)
+
+        # 응답 반환 (텍스트 포함) - Pydantic 모델이 자동으로 camelCase로 변환
+        return AssistantResponse(
+            response=response_text, 
+            thread_id=final_thread_id,
+            text=text
+        )
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"업로드된 오디오 처리 중 오류 발생: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"업로드된 오디오를 처리하는 중 오류 발생: {str(e)}"
@@ -134,10 +164,13 @@ async def get_assistant_audio_response(
     """
     try:
         # Query 매개변수의 thread_id를 우선적으로 사용하고, 없으면 body의 thread_id 사용
-        effective_thread_id = thread_id or query.thread_id
+        raw_thread_id = thread_id or query.thread_id
+        # thread_id 유효성 검사
+        validated_thread_id = _validate_thread_id(raw_thread_id)
+        logger.info(f"Assistant 서비스 호출 전 (audio) thread_id: {validated_thread_id}") # 로깅 추가
 
         # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, new_thread_id = assistant_service.get_response(query.text, effective_thread_id)
+        response_text, final_thread_id = assistant_service.get_response(query.text, validated_thread_id)
 
         # 응답 텍스트를 음성으로 변환 (기본적으로 OpenAI의 TTS 사용)
         audio_stream = tts_service.text_to_speech_stream(response_text, provider=provider)
@@ -147,10 +180,12 @@ async def get_assistant_audio_response(
             audio_stream,
             media_type="audio/mpeg",
             headers={
-                "Content-Disposition": f"attachment; filename=assistant_response.mp3"
+                "Content-Disposition": f"attachment; filename=assistant_response.mp3",
+                "X-Thread-ID": final_thread_id # 스레드 ID를 헤더에 추가 (선택 사항)
             }
         )
     except Exception as e:
+        logger.error(f"Assistant 음성 응답 처리 중 오류 발생: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Assistant 음성 응답을 가져오는 중 오류 발생: {str(e)}"
@@ -198,8 +233,12 @@ async def get_assistant_audio_response_from_upload(
         # 서비스를 사용하여 음성을 텍스트로 변환
         text = await stt_service.speech_to_text_from_file(file)
 
+        # thread_id 유효성 검사
+        validated_thread_id = _validate_thread_id(thread_id)
+        logger.info(f"Assistant 서비스 호출 전 (upload/audio) thread_id: {validated_thread_id}") # 로깅 추가
+
         # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, new_thread_id = assistant_service.get_response(text, thread_id)
+        response_text, final_thread_id = assistant_service.get_response(text, validated_thread_id)
 
         # 응답 텍스트를 음성으로 변환 (기본적으로 OpenAI의 TTS 사용)
         audio_stream = tts_service.text_to_speech_stream(response_text, provider=provider)
@@ -209,12 +248,14 @@ async def get_assistant_audio_response_from_upload(
             audio_stream,
             media_type="audio/mpeg",
             headers={
-                "Content-Disposition": f"attachment; filename=assistant_response.mp3"
+                "Content-Disposition": f"attachment; filename=assistant_response.mp3",
+                "X-Thread-ID": final_thread_id # 스레드 ID를 헤더에 추가 (선택 사항)
             }
         )
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"업로드된 오디오 음성 응답 처리 중 오류 발생: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"업로드된 오디오를 처리하는 중 오류 발생: {str(e)}"
