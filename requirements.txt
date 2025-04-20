@@ -10,3 +10,4 @@ python-multipart
 pydantic
 pytest
 email-validator
+pyhumps

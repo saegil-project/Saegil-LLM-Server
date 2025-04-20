@@ -85,6 +85,8 @@ class AssistantService:
                 thread_id = self.create_thread()
                 logger.info(f"새 스레드가 생성되었습니다. ID: {thread_id}")
 
+            logger.info(f"OpenAI 메시지 생성 호출 전 thread_id: {thread_id}") # 로깅 추가
+
             # 메시지 추가
             self.client.beta.threads.messages.create(
                 thread_id=thread_id,

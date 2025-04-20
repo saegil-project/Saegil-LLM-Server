@@ -12,7 +12,8 @@ from app.services.chatgpt_service import ChatGPTService
 from app.services.speech_to_text_service import SpeechToTextService
 from app.services.text_to_speech_service import TextToSpeechService
 
-router = APIRouter(prefix="/stt-chatgpt-tts", tags=["stt-chatgpt-tts"])
+# 라우터 경로를 /api/v1/stt-chatgpt-tts로 변경
+router = APIRouter(prefix="/api/v1/stt-chatgpt-tts", tags=["stt-chatgpt-tts"])
 
 
 @router.post("/upload", summary="음성 파일 업로드로 STT-ChatGPT-TTS 통합 처리")
