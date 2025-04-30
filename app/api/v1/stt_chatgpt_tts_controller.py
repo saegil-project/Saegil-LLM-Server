@@ -6,14 +6,15 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 
+from app.core.config import settings
 from app.dependencies import get_speech_to_text_service, get_chatgpt_service, get_text_to_speech_service
 from app.models.stt_chatgpt_tts import STTChatGPTTTSResponse
 from app.services.chatgpt_service import ChatGPTService
 from app.services.speech_to_text_service import SpeechToTextService
 from app.services.text_to_speech_service import TextToSpeechService
 
-# 라우터 경로를 /api/v1/stt-chatgpt-tts로 변경
-router = APIRouter(prefix="/api/v1/stt-chatgpt-tts", tags=["stt-chatgpt-tts"])
+# 라우터 경로에서 기본 경로만 지정하고 API_V1_STR은 main.py에서 처리되도록 수정
+router = APIRouter(prefix="/stt-chatgpt-tts", tags=["stt-chatgpt-tts"])
 
 
 @router.post("/upload", summary="음성 파일 업로드로 STT-ChatGPT-TTS 통합 처리")

@@ -7,6 +7,7 @@ from typing import Literal, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from fastapi.responses import StreamingResponse
 
+from app.core.config import settings
 from app.dependencies import get_assistant_service, get_speech_to_text_service, get_text_to_speech_service
 from app.models.assistant import AssistantQuery, AssistantResponse
 from app.services.assistant_service import AssistantService
@@ -16,8 +17,8 @@ from app.services.text_to_speech_service import TextToSpeechService
 # 로깅 설정
 logger = logging.getLogger(__name__)
 
-# 라우터 경로를 /api/v1/assistant로 변경
-router = APIRouter(prefix="/api/v1/assistant", tags=["assistant"])
+# config.py의 API_V1_STR 사용
+router = APIRouter(prefix="/assistant", tags=["assistant"])
 
 
 def _validate_thread_id(thread_id: Optional[str]) -> Optional[str]:

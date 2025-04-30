@@ -26,11 +26,7 @@ tags_metadata = [
     {
         "name": "stt-chatgpt-tts",
         "description": "음성-텍스트 변환, ChatGPT 응답, 텍스트-음성 변환을 통합한 작업.",
-    },
-    {
-        "name": "frontend",
-        "description": "웹 애플리케이션 프론트엔드 제공 관련 작업.",
-    },
+    }
 ]
 
 # Create FastAPI app
@@ -80,9 +76,6 @@ app = FastAPI(
     },
     openapi_tags=tags_metadata
 )
-
-# Mount static files directory
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Include API router
 app.include_router(api_router)

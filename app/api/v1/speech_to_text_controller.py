@@ -3,12 +3,13 @@
 """
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 
+from app.core.config import settings
 from app.dependencies import get_speech_to_text_service
 from app.models.speech_to_text import AudioQuery, TranscriptionResult
 from app.services.speech_to_text_service import SpeechToTextService
 
-# 라우터 경로를 /api/v1/speech-to-text로 변경
-router = APIRouter(prefix="/api/v1/speech-to-text", tags=["speech-to-text"])
+# 라우터 경로 설정 - config.py의 API_V1_STR 사용하지 않고 하위 경로만 지정
+router = APIRouter(prefix="/speech-to-text", tags=["speech-to-text"])
 
 
 @router.post("/audio-url", response_model=TranscriptionResult, summary="오디오 URL에서 음성을 텍스트로 변환")

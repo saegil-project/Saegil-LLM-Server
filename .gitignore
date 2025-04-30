@@ -1,17 +1,21 @@
-### Idea ###
+### idea files ###
 .idea
 
 ### macOS ###
 .DS_Store
 
-### Pyenv ###
+### pyenv ###
 .python-version
 
-### Pycache ###
+### pycache ###
 __pycache__
 
 ### venv ###
 .venv
 
-### Junie Guideline ###
+### junie Guideline ###
 .junie
+
+### vscode ###
+.github/prompts/
+copilot-instructions.md

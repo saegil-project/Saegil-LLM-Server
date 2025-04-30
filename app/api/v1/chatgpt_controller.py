@@ -3,13 +3,14 @@ ChatGPT 기능을 위한 API 라우트.
 """
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 
+from app.core.config import settings
 from app.dependencies import get_chatgpt_service, get_speech_to_text_service
 from app.models.chatgpt import ChatGPTQuery, ChatGPTResponse, ChatGPTSttQuery, ChatGPTAudioUrlQuery
 from app.services.chatgpt_service import ChatGPTService
 from app.services.speech_to_text_service import SpeechToTextService
 
-# 라우터 경로를 /api/v1/chatgpt로 변경
-router = APIRouter(prefix="/api/v1/chatgpt", tags=["chatgpt"])
+# config.py의 API_V1_STR을 사용하여 경로 설정하지 않고 하위 경로만 지정
+router = APIRouter(prefix="/chatgpt", tags=["chatgpt"])
 
 
 @router.post("/", response_model=ChatGPTResponse, summary="텍스트 쿼리에 대한 ChatGPT 응답 가져오기")
