@@ -77,8 +77,8 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
-# Include API router
-app.include_router(api_router)
+# Include API router with API_V1_STR prefix
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 # Run the app if this file is executed directly
 if __name__ == "__main__":
