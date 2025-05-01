@@ -59,21 +59,6 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
-    swagger_ui_parameters={
-        "defaultModelsExpandDepth": 1,
-        "deepLinking": True,
-        "displayRequestDuration": True,
-        "syntaxHighlight.theme": "monokai"
-    },
-    contact={
-        "name": "API 지원팀",
-        "email": "support@example.com",
-        "url": "https://example.com/support",
-    },
-    license_info={
-        "name": "MIT 라이선스",
-        "url": "https://opensource.org/licenses/MIT",
-    },
     openapi_tags=tags_metadata
 )
 
