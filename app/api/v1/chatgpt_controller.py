@@ -111,17 +111,17 @@ async def get_chatgpt_response_from_audio_url(
         )
 
 
-@router.post("/upload", response_model=ChatGPTResponse, summary="MP3 파일 업로드로 ChatGPT 응답 가져오기")
+@router.post("/upload", response_model=ChatGPTResponse, summary="오디오 파일 업로드로 ChatGPT 응답 가져오기")
 async def get_chatgpt_response_from_upload(
         file: UploadFile = File(...),
         stt_service: SpeechToTextService = Depends(get_speech_to_text_service),
         chatgpt_service: ChatGPTService = Depends(get_chatgpt_service)
 ):
     """
-    업로드된 MP3 파일에서 음성을 텍스트로 변환한 후 ChatGPT 응답을 가져옵니다.
+    업로드된 오디오 파일에서 음성을 텍스트로 변환한 후 ChatGPT 응답을 가져옵니다.
 
     Args:
-        file: 텍스트로 변환할 오디오 파일 (MP3 형식)
+        file: 텍스트로 변환할 오디오 파일(MP3, M4A 등 형식)
         stt_service: 음성-텍스트 변환 서비스 (주입됨)
         chatgpt_service: ChatGPT 서비스 (주입됨)
 

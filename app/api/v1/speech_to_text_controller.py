@@ -43,16 +43,16 @@ async def convert_speech_to_text(
         )
 
 
-@router.post("/upload", response_model=TranscriptionResult, summary="MP3 파일 업로드로 음성을 텍스트로 변환")
+@router.post("/upload", response_model=TranscriptionResult, summary="오디오 파일 업로드로 음성을 텍스트로 변환")
 async def convert_speech_to_text_from_file(
         file: UploadFile = File(...),
         stt_service: SpeechToTextService = Depends(get_speech_to_text_service)
 ):
     """
-    업로드된 MP3 파일에서 음성을 텍스트로 변환합니다.
+    업로드된 오디오 파일에서 음성을 텍스트로 변환합니다.
 
     Args:
-        file: 텍스트로 변환할 오디오 파일 (MP3 형식)
+        file: 텍스트로 변환할 오디오 파일(MP3, M4A 등 형식)
         stt_service: 음성-텍스트 변환 서비스 (주입됨)
 
     Returns:

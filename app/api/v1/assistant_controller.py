@@ -74,7 +74,7 @@ async def get_assistant_response(
         )
 
 
-@router.post("/upload", response_model=AssistantResponse, summary="MP3 파일 업로드로 STT 변환 후 Assistant 응답 가져오기")
+@router.post("/upload", response_model=AssistantResponse, summary="오디오 파일 업로드로 STT 변환 후 Assistant 응답 가져오기")
 async def get_assistant_response_from_upload(
         file: UploadFile = File(...),
         thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
@@ -82,13 +82,13 @@ async def get_assistant_response_from_upload(
         assistant_service: AssistantService = Depends(get_assistant_service)
 ):
     """
-    업로드된 MP3 파일에서 음성을 텍스트로 변환한 후 OpenAI Assistant 응답을 가져옵니다.
+    업로드된 오디오 파일에서 음성을 텍스트로 변환한 후 OpenAI Assistant 응답을 가져옵니다.
     
     이 엔드포인트는 대화 문맥을 유지하면서 응답을 생성합니다.
     thread_id를 제공하면 기존 대화를 계속하고, 제공하지 않으면 새 대화를 시작합니다.
 
     Args:
-        file: 텍스트로 변환할 오디오 파일 (MP3 형식)
+        file: 텍스트로 변환할 오디오 파일(MP3, M4A 등 형식)
         thread_id: 대화 스레드 ID (없으면 새로 생성됨)
         stt_service: 음성-텍스트 변환 서비스 (주입됨)
         assistant_service: Assistant 서비스 (주입됨)
@@ -189,7 +189,7 @@ async def get_assistant_audio_response(
         )
 
 
-@router.post("/upload/audio", summary="MP3 파일 업로드로 STT 변환 후 Assistant 응답을 음성으로 가져오기")
+@router.post("/upload/audio", summary="오디오 파일 업로드로 STT 변환 후 Assistant 응답을 음성으로 가져오기")
 async def get_assistant_audio_response_from_upload(
         file: UploadFile = File(...),
         thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
@@ -199,14 +199,14 @@ async def get_assistant_audio_response_from_upload(
         tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
 ):
     """
-    업로드된 MP3 파일에서 음성을 텍스트로 변환한 후 OpenAI Assistant 응답을 음성으로 반환합니다.
+    업로드된 오디오 파일에서 음성을 텍스트로 변환한 후 OpenAI Assistant 응답을 음성으로 반환합니다.
     
     이 엔드포인트는 대화 문맥을 유지하면서 응답을 생성하고, 생성된 텍스트 응답을
     OpenAI 또는 ElevenLabs를 사용하여 음성으로 변환합니다.
     thread_id를 제공하면 기존 대화를 계속하고, 제공하지 않으면 새 대화를 시작합니다.
 
     Args:
-        file: 텍스트로 변환할 오디오 파일 (MP3 형식)
+        file: 텍스트로 변환할 오디오 파일(MP3, M4A 등 형식)
         thread_id: 대화 스레드 ID (없으면 새로 생성됨)
         provider: 사용할 음성 제공자 ("elevenlabs" 또는 "openai")
         stt_service: 음성-텍스트 변환 서비스 (주입됨)

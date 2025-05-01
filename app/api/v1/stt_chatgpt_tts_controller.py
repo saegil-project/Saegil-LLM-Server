@@ -32,7 +32,7 @@ async def process_stt_chatgpt_tts_from_upload(
     4. 오디오 응답 반환
 
     Args:
-        file: 텍스트로 변환할 오디오 파일 (MP3 형식)
+        file: 텍스트로 변환할 오디오 파일(MP3, M4A 등 형식)
         stt_service: 음성-텍스트 변환 서비스 (주입됨)
         chatgpt_service: ChatGPT 서비스 (주입됨)
         tts_service: 텍스트-음성 변환 서비스 (주입됨)
@@ -92,7 +92,7 @@ async def process_stt_chatgpt_tts_from_upload_json(
     4. 텍스트 및 오디오 URL이 포함된 JSON 응답 반환
 
     Args:
-        file: 텍스트로 변환할 오디오 파일 (MP3 형식)
+        file: 텍스트로 변환할 오디오 파일(MP3, M4A 등 형식)
         stt_service: 음성-텍스트 변환 서비스 (주입됨)
         chatgpt_service: ChatGPT 서비스 (주입됨)
         tts_service: 텍스트-음성 변환 서비스 (주입됨)

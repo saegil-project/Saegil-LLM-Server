@@ -3,6 +3,8 @@ OpenAI API를 사용한 음성-텍스트 변환 서비스.
 """
 import os
 import tempfile
+import mimetypes
+from pathlib import Path
 
 import requests
 from fastapi import UploadFile
@@ -40,9 +42,19 @@ class SpeechToTextService:
             # URL에서 오디오 파일 다운로드
             response = requests.get(audio_url)
             response.raise_for_status()  # 오류 발생 시 예외 발생
+            
+            # 파일 확장자 결정
+            content_type = response.headers.get('Content-Type', '')
+            ext = self._get_extension_from_content_type(content_type)
+            
+            if not ext:
+                # URL에서 확장자 추출 시도
+                ext = Path(audio_url).suffix
+                if not ext:
+                    ext = ".mp3"  # 기본값
 
             # 임시 파일로 오디오 저장
-            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
+            with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as temp_file:
                 temp_file_path = temp_file.name
                 temp_file.write(response.content)
 
@@ -66,7 +78,7 @@ class SpeechToTextService:
 
     async def speech_to_text_from_file(self, file: UploadFile) -> str:
         """
-        업로드된 MP3 파일에서 음성을 텍스트로 변환합니다.
+        업로드된 오디오 파일에서 음성을 텍스트로 변환합니다.
 
         Args:
             file: 텍스트로 변환할 업로드된 오디오 파일
@@ -78,8 +90,11 @@ class SpeechToTextService:
             Exception: 오디오를 텍스트로 변환하는 중 오류가 발생한 경우
         """
         try:
+            # 파일 확장자 결정
+            ext = self._get_extension_from_filename(file.filename) or self._get_extension_from_content_type(file.content_type)
+            
             # 임시 파일로 업로드된 오디오 저장
-            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
+            with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as temp_file:
                 temp_file_path = temp_file.name
                 content = await file.read()
                 temp_file.write(content)
@@ -101,6 +116,53 @@ class SpeechToTextService:
 
         except Exception as e:
             raise Exception(f"업로드된 오디오를 텍스트로 변환하는 중 오류 발생: {str(e)}")
+    
+    def _get_extension_from_content_type(self, content_type: str) -> str:
+        """
+        MIME 타입으로부터 적절한 파일 확장자를 결정합니다.
+        
+        Args:
+            content_type: 파일의 MIME 타입
+            
+        Returns:
+            파일 확장자(.mp3, .m4a 등)
+        """
+        if not content_type:
+            return ".mp3"
+        
+        # 직접 매핑
+        if "mpeg" in content_type or "mp3" in content_type:
+            return ".mp3"
+        elif "mp4" in content_type or "m4a" in content_type:
+            return ".m4a"
+        elif "wav" in content_type:
+            return ".wav"
+        
+        # mimetypes 라이브러리 사용
+        ext = mimetypes.guess_extension(content_type)
+        if ext:
+            return ext
+            
+        return ".mp3"  # 기본값
+    
+    def _get_extension_from_filename(self, filename: str) -> str:
+        """
+        파일명에서 확장자를 추출합니다.
+        
+        Args:
+            filename: 파일 이름
+            
+        Returns:
+            파일 확장자(.mp3, .m4a 등) 또는 None
+        """
+        if not filename:
+            return None
+            
+        ext = Path(filename).suffix
+        if ext:
+            return ext
+            
+        return None
 
 
 # 서비스의 기본 인스턴스 생성
