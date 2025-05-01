@@ -18,7 +18,7 @@ router = APIRouter(prefix="/text-to-speech", tags=["text-to-speech"])
 @router.post("/", summary="텍스트를 음성으로 변환")
 async def convert_text_to_speech(
         query: TextQuery,
-        provider: Literal["elevenlabs", "openai"] = Query(default=None, description="사용할 음성 제공자(요청 본문 provider 값 대체)"),
+        provider: Literal["elevenlabs", "openai"] = Query(default="openai", description="사용할 음성 제공자(요청 본문 provider 값 대체)"),
         tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
 ):
     """
