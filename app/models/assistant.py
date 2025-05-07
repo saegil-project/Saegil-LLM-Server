@@ -44,7 +44,7 @@ class AssistantResponse(BaseModel):
             "example": {
                 "question": "오늘 날씨가 어떤가요?",
                 "response": "안녕하세요! 오늘 날씨는 지역에 따라 다를 수 있습니다.",
-                "thread_id": "thread_abc123"
+                "threadId": "thread_abc123"
             }
         }
     }
