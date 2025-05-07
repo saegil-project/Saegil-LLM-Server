@@ -18,7 +18,7 @@ router = APIRouter(prefix="/text-to-speech", tags=["text-to-speech"])
 @router.post("/", summary="텍스트를 음성으로 변환")
 async def convert_text_to_speech(
         query: TextQuery,
-        provider: Literal["elevenlabs", "openai"] = Query(default="openai", description="사용할 음성 제공자(요청 본문 provider 값 대체)"),
+        provider: Literal["elevenlabs", "openai"] = Query(default="openai", description="사용할 음성 제공자"),
         tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
 ):
     """
@@ -26,7 +26,7 @@ async def convert_text_to_speech(
 
     Args:
         query: 음성으로 변환할 텍스트 쿼리
-        provider: 사용할 음성 제공자 ("elevenlabs" 또는 "openai"), 제공되면 query의 provider보다 우선함
+        provider: 사용할 음성 제공자 ("elevenlabs" 또는 "openai")
         tts_service: 텍스트-음성 변환 서비스 (주입됨)
 
     Returns:
@@ -36,11 +36,8 @@ async def convert_text_to_speech(
         HTTPException: 텍스트를 음성으로 변환하는 중 오류가 발생한 경우
     """
     try:
-        # 쿼리 파라미터로 전달된 provider가 있으면 그것을 사용하고, 그렇지 않으면 요청 본문의 provider를 사용
-        active_provider = provider or query.provider
-        
         # 서비스를 사용하여 텍스트를 음성으로 변환
-        audio_stream = tts_service.text_to_speech_stream(query.text, provider=active_provider)
+        audio_stream = tts_service.text_to_speech_stream(query.text, provider=provider)
 
         # 오디오를 스트리밍 응답으로 반환
         return StreamingResponse(
