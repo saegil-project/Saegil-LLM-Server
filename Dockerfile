@@ -1,6 +1,12 @@
 # 베이스 이미지
 FROM python:3.12-slim
 
+# ffmpeg 설치에 필요한 도구 먼저 설치 후 ffmpeg 설치
+RUN apt-get update && \
+    apt-get install -y ffmpeg && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # 작업 디렉토리 설정
 WORKDIR /app
 
