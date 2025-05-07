@@ -11,3 +11,4 @@ pydantic
 pytest
 email-validator
 pyhumps
+pydub

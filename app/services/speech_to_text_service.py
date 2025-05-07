@@ -12,6 +12,7 @@ from openai import OpenAI
 
 from app.core.config import settings
 
+from pydub import AudioSegment
 
 class SpeechToTextService:
     """
@@ -24,6 +25,32 @@ class SpeechToTextService:
         """
         self.client = OpenAI(api_key=api_key)
         self.model = settings.OPENAI_MODEL
+
+    def _convert_m4a_to_mp3(self, input_path: str) -> str:
+        """
+        m4a 파일을 mp3로 변환합니다.
+
+        Args:
+            input_path: 변환할 m4a 파일 경로
+
+        Returns:
+            변환된 mp3 파일 경로
+        """
+        output_path = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False).name
+        audio = AudioSegment.from_file(input_path, format="m4a")
+        audio.export(output_path, format="mp3")
+        return output_path
+
+    def _transcribe_with_openai(self, file_path: str) -> str:
+        """
+        OpenAI를 사용하여 파일에서 텍스트를 추출합니다.
+        """
+        with open(file_path, "rb") as audio_file:
+            transcript = self.client.audio.transcriptions.create(
+                model=self.model,
+                file=audio_file
+            )
+        return transcript.text
 
     def speech_to_text(self, audio_url: str) -> str:
         """
@@ -59,15 +86,14 @@ class SpeechToTextService:
                 temp_file.write(response.content)
 
             try:
-                # OpenAI API를 사용하여 음성을 텍스트로 변환
-                with open(temp_file_path, "rb") as audio_file:
-                    transcript = self.client.audio.transcriptions.create(
-                        model=self.model,
-                        file=audio_file
-                    )
+                # m4a라면 mp3로 변환
+                if ext == ".m4a":
+                    converted_path = self._convert_m4a_to_mp3(temp_file_path)
+                    os.remove(temp_file_path)
+                    temp_file_path = converted_path
 
-                # 결과 반환
-                return transcript.text
+                # OpenAI API를 사용하여 음성을 텍스트로 변환
+                return self._transcribe_with_openai(temp_file_path)
             finally:
                 # 임시 파일 삭제
                 if os.path.exists(temp_file_path):
@@ -100,15 +126,14 @@ class SpeechToTextService:
                 temp_file.write(content)
 
             try:
-                # OpenAI API를 사용하여 음성을 텍스트로 변환
-                with open(temp_file_path, "rb") as audio_file:
-                    transcript = self.client.audio.transcriptions.create(
-                        model=self.model,
-                        file=audio_file
-                    )
+                # m4a라면 mp3로 변환
+                if ext == ".m4a":
+                    converted_path = self._convert_m4a_to_mp3(temp_file_path)
+                    os.remove(temp_file_path)
+                    temp_file_path = converted_path
 
-                # 결과 반환
-                return transcript.text
+                # OpenAI API를 사용하여 음성을 텍스트로 변환
+                return self._transcribe_with_openai(temp_file_path)
             finally:
                 # 임시 파일 삭제
                 if os.path.exists(temp_file_path):
