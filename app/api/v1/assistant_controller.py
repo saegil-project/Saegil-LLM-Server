@@ -32,7 +32,7 @@ def _validate_thread_id(thread_id: Optional[str]) -> Optional[str]:
 @router.post("/", response_model=AssistantResponse, summary="텍스트 쿼리에 대한 Assistant 응답 가져오기")
 async def get_assistant_response(
         query: AssistantQuery,
-        thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
+        thread_id: Optional[str] = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
         assistant_service: AssistantService = Depends(get_assistant_service)
 ):
     """
@@ -53,18 +53,17 @@ async def get_assistant_response(
         HTTPException: Assistant 응답을 가져오는 중 오류가 발생한 경우
     """
     try:
-        # Query 매개변수의 thread_id만 사용하도록 수정
         validated_thread_id = _validate_thread_id(thread_id)
-        logger.info(f"Assistant 서비스 호출 전 thread_id: {validated_thread_id}") # 로깅 추가
+        logger.info(f"Assistant 서비스 호출 전 thread_id: {validated_thread_id}")
         
         # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, final_thread_id = assistant_service.get_response(query.text, validated_thread_id)
+        question, response_text, final_thread_id = assistant_service.get_response(query.text, validated_thread_id)
 
         # 응답 반환 - Pydantic 모델이 자동으로 camelCase로 변환
         return AssistantResponse(
+            question=question,
             response=response_text, 
-            thread_id=final_thread_id,
-            text=query.text
+            thread_id=final_thread_id
         )
     except Exception as e:
         logger.error(f"Assistant 응답 처리 중 오류 발생: {str(e)}", exc_info=True)
@@ -77,7 +76,7 @@ async def get_assistant_response(
 @router.post("/upload", response_model=AssistantResponse, summary="오디오 파일 업로드로 STT 변환 후 Assistant 응답 가져오기")
 async def get_assistant_response_from_upload(
         file: UploadFile = File(...),
-        thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
+        thread_id: Optional[str] = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
         stt_service: SpeechToTextService = Depends(get_speech_to_text_service),
         assistant_service: AssistantService = Depends(get_assistant_service)
 ):
@@ -112,16 +111,16 @@ async def get_assistant_response_from_upload(
 
         # thread_id 유효성 검사
         validated_thread_id = _validate_thread_id(thread_id)
-        logger.info(f"Assistant 서비스 호출 전 (upload) thread_id: {validated_thread_id}") # 로깅 추가
+        logger.info(f"Assistant 서비스 호출 전 (upload) thread_id: {validated_thread_id}")
 
         # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, final_thread_id = assistant_service.get_response(text, validated_thread_id)
+        question, response_text, final_thread_id = assistant_service.get_response(text, validated_thread_id)
 
         # 응답 반환 (텍스트 포함) - Pydantic 모델이 자동으로 camelCase로 변환
         return AssistantResponse(
+            question=question,
             response=response_text, 
-            thread_id=final_thread_id,
-            text=text
+            thread_id=final_thread_id
         )
     except HTTPException:
         raise
@@ -136,7 +135,7 @@ async def get_assistant_response_from_upload(
 @router.post("/audio", summary="텍스트 쿼리에 대한 Assistant 응답을 음성으로 가져오기")
 async def get_assistant_audio_response(
         query: AssistantQuery,
-        thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
+        thread_id: Optional[str] = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
         provider: Literal["elevenlabs", "openai"] = Query(default="openai", description="사용할 음성 제공자"),
         assistant_service: AssistantService = Depends(get_assistant_service),
         tts_service: TextToSpeechService = Depends(get_text_to_speech_service)
@@ -162,12 +161,11 @@ async def get_assistant_audio_response(
         HTTPException: Assistant 응답을 가져오거나 음성 변환 중 오류가 발생한 경우
     """
     try:
-        # Query 매개변수의 thread_id만 사용하도록 수정
         validated_thread_id = _validate_thread_id(thread_id)
-        logger.info(f"Assistant 서비스 호출 전 (audio) thread_id: {validated_thread_id}") # 로깅 추가
+        logger.info(f"Assistant 서비스 호출 전 (audio) thread_id: {validated_thread_id}")
 
         # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, final_thread_id = assistant_service.get_response(query.text, validated_thread_id)
+        question, response_text, final_thread_id = assistant_service.get_response(query.text, validated_thread_id)
 
         # 응답 텍스트를 음성으로 변환 (기본적으로 OpenAI의 TTS 사용)
         audio_stream = tts_service.text_to_speech_stream(response_text, provider=provider)
@@ -192,7 +190,7 @@ async def get_assistant_audio_response(
 @router.post("/upload/audio", summary="오디오 파일 업로드로 STT 변환 후 Assistant 응답을 음성으로 가져오기")
 async def get_assistant_audio_response_from_upload(
         file: UploadFile = File(...),
-        thread_id: str = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
+        thread_id: Optional[str] = Query(None, description="대화 스레드 ID (없으면 새로 생성됨)"),
         provider: Literal["elevenlabs", "openai"] = Query(default="openai", description="사용할 음성 제공자"),
         stt_service: SpeechToTextService = Depends(get_speech_to_text_service),
         assistant_service: AssistantService = Depends(get_assistant_service),
@@ -232,10 +230,10 @@ async def get_assistant_audio_response_from_upload(
 
         # thread_id 유효성 검사
         validated_thread_id = _validate_thread_id(thread_id)
-        logger.info(f"Assistant 서비스 호출 전 (upload/audio) thread_id: {validated_thread_id}") # 로깅 추가
+        logger.info(f"Assistant 서비스 호출 전 (upload/audio) thread_id: {validated_thread_id}")
 
         # 서비스를 사용하여 Assistant 응답 가져오기
-        response_text, final_thread_id = assistant_service.get_response(text, validated_thread_id)
+        question, response_text, final_thread_id = assistant_service.get_response(text, validated_thread_id)
 
         # 응답 텍스트를 음성으로 변환 (기본적으로 OpenAI의 TTS 사용)
         audio_stream = tts_service.text_to_speech_stream(response_text, provider=provider)

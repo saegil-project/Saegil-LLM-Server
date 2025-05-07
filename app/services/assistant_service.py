@@ -65,7 +65,7 @@ class AssistantService:
             logger.error(f"스레드 생성 중 오류 발생: {str(e)}")
             raise
 
-    def get_response(self, text: str, thread_id: Optional[str] = None) -> Tuple[str, str]:
+    def get_response(self, text: str, thread_id: Optional[str] = None) -> Tuple[str, str, str]:
         """
         텍스트 쿼리에 대한 Assistant 응답을 가져옵니다.
         
@@ -74,7 +74,10 @@ class AssistantService:
             thread_id: 기존 대화 스레드 ID (없으면 새로 생성됨)
             
         Returns:
-            Assistant의 응답 텍스트와 스레드 ID의 튜플
+            (question, response, thread_id) 튜플
+            - question: 사용자의 원본 질문
+            - response: Assistant의 응답 텍스트
+            - thread_id: 대화 스레드 ID
             
         Raises:
             Exception: Assistant 응답을 가져오는 중 오류가 발생한 경우
@@ -85,7 +88,7 @@ class AssistantService:
                 thread_id = self.create_thread()
                 logger.info(f"새 스레드가 생성되었습니다. ID: {thread_id}")
 
-            logger.info(f"OpenAI 메시지 생성 호출 전 thread_id: {thread_id}") # 로깅 추가
+            logger.info(f"OpenAI 메시지 생성 호출 전 thread_id: {thread_id}")
 
             # 메시지 추가
             self.client.beta.threads.messages.create(
@@ -117,10 +120,10 @@ class AssistantService:
                         if content.type == "text":
                             content_text += content.text.value
 
-                    return content_text, thread_id
+                    return text, content_text, thread_id
 
             # assistant 메시지를 찾지 못한 경우
-            return "응답을 생성하지 못했습니다.", thread_id
+            return text, "응답을 생성하지 못했습니다.", thread_id
 
         except Exception as e:
             logger.error(f"Assistant 응답을 가져오는 중 오류 발생: {str(e)}")

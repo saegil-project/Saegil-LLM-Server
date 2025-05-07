@@ -33,18 +33,18 @@ class AssistantResponse(BaseModel):
     """
     OpenAI Assistants API 응답을 위한 모델.
     """
+    question: str = Field(..., description="사용자의 원본 질문")
     response: str = Field(..., description="Assistant의 응답 텍스트")
     thread_id: str = Field(..., description="대화 스레드 ID")
-    text: str = Field(None, description="STT로 변환된 원본 텍스트")
 
     model_config = {
         "populate_by_name": True,  # 이름으로도 필드를 채울 수 있게 합니다.
         "alias_generator": camel_case,  # snake_case 필드명을 camelCase로 변환합니다.
         "json_schema_extra": {
             "example": {
-                "response": "안녕하세요! 오늘 날씨는 지역에 따라 다를 수 있습니다. 특정 지역을 알려주시면 더 정확한 정보를 제공해 드릴 수 있습니다.",
-                "thread_id": "thread_abc123",
-                "text": "오늘 날씨가 어떤가요?"
+                "question": "오늘 날씨가 어떤가요?",
+                "response": "안녕하세요! 오늘 날씨는 지역에 따라 다를 수 있습니다.",
+                "thread_id": "thread_abc123"
             }
         }
     }
