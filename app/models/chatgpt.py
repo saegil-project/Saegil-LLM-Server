@@ -1,6 +1,7 @@
 """
 ChatGPT 기능을 위한 Pydantic 모델.
 """
+from typing import Optional
 from pydantic import BaseModel, Field, HttpUrl
 
 
@@ -54,7 +55,7 @@ class ChatGPTResponse(BaseModel):
     ChatGPT 응답을 위한 모델.
     """
     response: str = Field(..., description="ChatGPT의 응답 텍스트")
-    text: str = Field(None, description="STT로 변환된 원본 텍스트")
+    text: Optional[str] = Field(None, description="원본 입력 텍스트")
 
     model_config = {
         "json_schema_extra": {

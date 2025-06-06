@@ -16,7 +16,7 @@ async def get_chatgpt_response(
 ):
     try:
         response_text = chatgpt_service.get_response(query.text)
-        return ChatGPTResponse(response=response_text)
+        return ChatGPTResponse(response=response_text, text=query.text)
     except Exception as e:
         raise HTTPException(
             status_code=500,
